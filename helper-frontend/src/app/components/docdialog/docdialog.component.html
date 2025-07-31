@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Select Document Type & Upload</h2>
+
+<mat-form-field appearance="outline">
+  <mat-label>Document Type</mat-label>
+  <mat-select [(ngModel)]="docType">
+    <mat-option *ngFor="let type of docTypes" [value]="type">
+      {{ type }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div
+  class="drop-zone"
+  (drop)="onDrop($event)"
+  (dragover)="onDragOver($event)"
+>
+  <p *ngIf="!selectedFile">Drag & drop your document here or</p>
+  <p *ngIf="selectedFile">Selected: {{ selectedFile.name }}</p>
+  <button mat-button (click)="fileInput.click()">Select File</button>
+  <input
+    type="file"
+    accept=".pdf,.jpg,.jpeg,.png"
+    (change)="onFileSelected($event)"
+    hidden
+    #fileInput
+  />
+</div>
+
+<div class="actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || !docType">Upload</button>
+</div>

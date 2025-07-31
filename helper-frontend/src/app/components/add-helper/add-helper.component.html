@@ -1,0 +1,196 @@
+<div class="stepper-layout">
+  <mat-vertical-stepper [linear]="true" [(selectedIndex)]="selectedIndex" orientation="vertical">
+    <mat-step [stepControl]="firstFormGroup">
+      <ng-template matStepLabel>Helper Details
+        <div class="step-description">Add helper details</div>
+      </ng-template>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <ng-template matStepLabel>Documents
+        <div class="step-description">upload related documents</div>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Review
+        <div class="step-description">check the information and confirm</div>
+      </ng-template>
+    </mat-step>
+  </mat-vertical-stepper>
+
+
+  <div class="step-content">
+    <form *ngIf="selectedIndex === 0" [formGroup]="firstFormGroup">
+      <!-- <div>
+        <label>Profile pic</label><br>
+        <mat-form-field appearance="outline">
+        <input matInput formControlName="profilepic">
+      </mat-form-field>
+      </div> -->
+
+      <div>
+        <!-- <button type="button" mat-raised-button (click)="fileInput.click()">choose File</button> -->
+        <img src="assets/UploadImage.png" (click)="fileInput.click()" class="upload-image">
+        <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jepg,image/png">
+        <span class="selected-file">{{selectedFile?.name}}</span>
+      </div>
+      <div class="hint">
+        Only JPEG/PNG, up to {{MAX_MB}}MB
+        <span class="error" *ngIf="firstFormGroup.controls.profilepic.hasError('type')"> • JPEG/PNG required</span>
+        <span class="error" *ngIf="firstFormGroup.controls.profilepic.hasError('size')"> • File too large</span>
+      </div>
+
+      <br>
+      <div>
+        <mat-label>Type of Service*</mat-label><br>
+        <mat-form-field appearance="outline">
+         <mat-select formControlName="typeOfService" placeholder="Select the Type of Service">
+            <mat-option *ngFor="let service of typeofserviceoptions" [value] ='service'>{{service}}</mat-option>
+         </mat-select>
+        </mat-form-field>
+      </div>
+      <br>
+      <div>
+        <label>Organisaiton Name*</label>
+        <br>
+        <mat-form-field appearance="outline">
+         <mat-select formControlName="organisationName" placeholder="Organisaiton name">
+            <mat-option *ngFor="let org of organisationoptions" [value] = 'org'>{{org}}</mat-option>
+         </mat-select>
+      </mat-form-field>
+      </div>
+      <br>
+      <div>
+        <label>Full Name*</label><br>
+        <mat-form-field appearance="outline">
+        <input matInput placeholder="Full Name" formControlName="fullName" required>
+        </mat-form-field>
+      </div>
+      <br>
+
+      <!-- <section class = "check-section">
+        <span>
+          <mat-checkbox
+          [checked] = "languages().completed"
+          [indeterminate] = "partiallyCompleted()"
+          (change) = "update($event.checked)"
+          >
+          {{languages().name}}  
+          </mat-checkbox>
+        </span>
+        <span class="example-list-section">
+          <ul>
+            @for (suboption of languages().suboptions; track suboption; let i = $index) {
+              <li>
+                <mat-checkbox [checked]="suboption.completed" (change)="update($event.checked, i)">
+                  {{suboption.name}}
+                </mat-checkbox>
+              </li>
+            }
+          </ul>
+        </span>
+      </section> -->
+
+      <div>
+        <label>Languages*</label><br>
+        <mat-form-field appearance="outline">
+
+        <mat-select formControlName="languages" placeholder="Select languages" multiple>
+          <mat-option
+            #allOption="matOption"
+            (onSelectionChange)="toggleAll($event, allOption)"
+            class="select-all-option"
+          >
+            <mat-icon *ngIf="isAllSelected()">check_box</mat-icon>
+            <mat-icon *ngIf="isPartialSelected()">indeterminate_check_box</mat-icon>
+            <mat-icon *ngIf="isNoneSelected()">check_box_outline_blank</mat-icon>
+            <div>Select all
+            <mat-divider></mat-divider>
+             {{Selected.length}} / {{languagesoptions.length}}
+            </div>
+          </mat-option>
+
+          <mat-option *ngFor="let lang of languagesoptions" [value]="lang">
+            {{ lang }}
+          </mat-option>
+
+          <mat-select-trigger>
+            {{ firstFormGroup.controls.languages.value[0] || '' }}
+            @if (firstFormGroup.controls.languages.value.length > 1) {
+              <span class="additional-select-languages">
+                +{{ firstFormGroup.controls.languages.value.length - 1 }}
+              </span>
+            }
+          </mat-select-trigger>
+        </mat-select>
+      </mat-form-field>
+      </div>
+      
+      <br>
+      <div>
+        <mat-radio-group formControlName="gender" required>
+        <mat-label>Gender*</mat-label>
+        <br>
+          <mat-radio-button value="male">Male</mat-radio-button>
+          <mat-radio-button value="female">Female</mat-radio-button>
+          <mat-radio-button value="others">others</mat-radio-button>
+        </mat-radio-group>
+      </div>
+       <div>
+        <label>Phone*</label><br>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="contryCode">
+            <mat-select-trigger>
+              {{firstFormGroup.get('contryCode')?.value}}
+            </mat-select-trigger>
+          <mat-option *ngFor="let code of countryCode" [value]="code.dial_code">{{code.name}}{{code.dial_code}}</mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="Phone Number" formControlName="phoneNumber" >
+        </mat-form-field>
+       </div>
+       <br>
+       <div>
+        <label>Email</label><br>
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="example@abc.com" formControlName="email">
+        </mat-form-field>
+       </div>
+       <br>
+       <div>
+        <label>Choose Vehicle Type</label><br>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="vehicleType">
+            <mat-option *ngFor="let veh of vehicleType" [value]="veh">{{veh}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+       </div>
+       <br>
+       <div *ngIf="showVehicleNumber">
+        <label>Vehicle Number*</label> <br>
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="TG01AB1234" formControlName="vehicleNumber" required>
+        </mat-form-field>
+       </div> 
+      
+       <button mat-raised-button (click)="openDocUpload()">Upload KYC Document</button><br>
+      <button mat-raised-button color="primary" (click)="selectedIndex = 1" [disabled]="!firstFormGroup.valid">Next</button>
+    </form>
+
+    <form *ngIf="selectedIndex === 1" [formGroup]="secondFormGroup">
+      <mat-form-field appearance="fill">
+        <mat-label>Additional Documents</mat-label>
+        <button mat-raised-button (click)="openDocUpload()">Upload Additional Documents</button><br>
+      </mat-form-field>
+      <button mat-button (click)="selectedIndex = 0">Back</button>
+      <button mat-raised-button color="primary" (click)="selectedIndex = 2" [disabled]="!secondFormGroup.valid">Next</button>
+    </form>
+
+    <div *ngIf="selectedIndex === 2">
+      <p>Review and Continue</p>
+      <button mat-button (click)="selectedIndex = 1">Back</button>
+      <button mat-button (click)="onSubmit()">Submit</button>
+
+    </div>
+  </div>
+</div>
