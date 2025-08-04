@@ -1,0 +1,86 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.page-content {
+  display: flex;
+  height: calc(100vh - 64px); 
+  justify-content: space-between;
+}
+
+.left-list {
+  width: 300px;
+  border-right: 1px solid #ccc;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+.helper-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.helper-item:hover {
+  background-color: #e0e0e0;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.helper-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.helper-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.helper-service {
+  font-size: 14px;
+  color: #666;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f5f5;
+  margin: 5px;
+  border-radius: 5px;
+}
+   
+.helper-profile{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 5px;
+}
+
+.content-helper-name{
+  display: flex;
+  flex-direction: column;
+}
+
+.image-name-type{
+  display: flex;
+  flex-direction: row;
+}
+
+.sort-menu{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}

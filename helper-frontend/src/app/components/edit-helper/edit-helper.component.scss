@@ -7,7 +7,6 @@ header {
   border-bottom: 1px solid #ddd;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
-
 .header-left {
   display: flex;
   align-items: center;
@@ -33,27 +32,20 @@ header {
   color: #000;
 }
 
+.left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 300px;
+    
+}
 
-.stepper-layout {
+.page-content {
   display: flex;
-  gap: 24px;
+  flex-direction: row;
+  width: 100%;
 }
 
-mat-vertical-stepper {
-  width: 250px;
-}
-
-.step-content {
-  flex: 1;
-  padding: 1rem;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-}
-.step-description {
-    font-size: 12px;
-    color: gray;
-    margin-top: 2px;
-}
 ::ng-deep .select-all-option .mat-pseudo-checkbox {
   display: none !important;
 }

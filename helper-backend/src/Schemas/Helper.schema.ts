@@ -9,7 +9,7 @@ export class Helper{
     employeeIDurl: string
 
     @Prop()
-    profilePicurl? : string
+    profilePicUrl? : string
 
     @Prop({required: true})
     serviceType: string
@@ -28,6 +28,12 @@ export class Helper{
 
     @Prop({required: true})
     phone: string
+
+    @Prop({required: true})
+    countryCode: string
+
+    @Prop({required: true})
+    phoneNumber: string
     
     @Prop()
     email? : string
@@ -39,7 +45,7 @@ export class Helper{
     docType: string
 
     @Prop({required: true})
-    KYCDocurl: string
+    kycDocUrl: string
 
     @Prop()
     additionalDoc? : string

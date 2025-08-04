@@ -1,3 +1,11 @@
+<header>
+  <div class="header-left">
+    <mat-icon class="back-icon" (click)="goBackToHome()">arrow_back_ios</mat-icon>
+    <h1>Add Helper</h1>
+  </div>
+    <mat-icon class="more-icon">more_vert</mat-icon>
+</header>
+
 <div class="stepper-layout">
   <mat-vertical-stepper [linear]="true" [(selectedIndex)]="selectedIndex" orientation="vertical">
     <mat-step [stepControl]="firstFormGroup">
@@ -20,15 +28,7 @@
 
   <div class="step-content">
     <form *ngIf="selectedIndex === 0" [formGroup]="firstFormGroup">
-      <!-- <div>
-        <label>Profile pic</label><br>
-        <mat-form-field appearance="outline">
-        <input matInput formControlName="profilepic">
-      </mat-form-field>
-      </div> -->
-
       <div>
-        <!-- <button type="button" mat-raised-button (click)="fileInput.click()">choose File</button> -->
         <img src="assets/UploadImage.png" (click)="fileInput.click()" class="upload-image">
         <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jepg,image/png">
         <span class="selected-file">{{selectedFile?.name}}</span>
@@ -188,6 +188,12 @@
 
     <div *ngIf="selectedIndex === 2">
       <p>Review and Continue</p>
+      <div>
+              <h3>{{firstFormGroup.controls.fullName.value}}</h3>
+              <p>{{firstFormGroup.controls.typeOfService.value}}</p>
+      </div>
+
+
       <button mat-button (click)="selectedIndex = 1">Back</button>
       <button mat-button (click)="onSubmit()">Submit</button>
 

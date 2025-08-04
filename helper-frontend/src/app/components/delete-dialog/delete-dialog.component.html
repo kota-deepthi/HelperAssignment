@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Delete {{data.name}}</h2>
+<mat-dialog-content>
+  <p>You can't undo this action.</p>
+</mat-dialog-content>
+<mat-divider></mat-divider>
+<mat-dialog-actions>
+  <button matButton (click)="onClose()">Cancel</button>
+  <button mat-raised-button color="warn" (click)="onDelete()" >Delete</button>
+</mat-dialog-actions>

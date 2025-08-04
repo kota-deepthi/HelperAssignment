@@ -11,11 +11,14 @@ import {MatCheckboxModule} from '@angular/material/checkbox'
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core'
 import {MatDividerModule} from '@angular/material/divider'
 import {MatRadioModule} from '@angular/material/radio'
-import { CountryCodeService } from '../../country-code.service';
+import { CountryCodeService } from '../../services/country-code.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DocdialogComponent } from '../docdialog/docdialog.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar'
+import { HelperService } from '../../services/helper.service';
+import { Router, RouterLink } from '@angular/router';
+import { HomeComponent } from '../../home/home.component';
 @Component({
   selector: 'app-add-helper',
   standalone: true,
@@ -34,16 +37,12 @@ import {MatSnackBar} from '@angular/material/snack-bar'
     MatDividerModule,
     MatRadioModule,
     DocdialogComponent,
+    RouterLink,
+    HomeComponent
   ],
   templateUrl: './add-helper.component.html',
   styleUrl: './add-helper.component.scss'
 })
-
-// export interface languagesOptions{
-//   name: string;
-//   completed: boolean;
-//   suboptions? : languagesOptions[]
-// }
 
 export class AddHelperComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
@@ -54,7 +53,12 @@ export class AddHelperComponent implements OnInit {
   vehicleType= ['None', "Auto", "Bike", "car"]
   countryCode : {name: string; dial_code: string; code: string}[] = [];
 
-  constructor(private countryCodeService: CountryCodeService, private dialog: MatDialog){}
+  constructor(
+    private countryCodeService: CountryCodeService, 
+    private dialog: MatDialog,
+    private helperService: HelperService,
+    private router: Router
+  ){}
 
   ngOnInit(): void {
     this.countryCode = this.countryCodeService.getCountryCode();
@@ -78,41 +82,6 @@ export class AddHelperComponent implements OnInit {
       }
     })
   }
-
-
-
-  // readonly languages = signal<languagesOptions>({
-  //   name: "select all",
-  //   completed: false,
-  //   suboptions:[
-  //     {name: 'English', completed: false},
-  //     {name: 'Hindi', completed: false},
-  //     {name: 'Telugu', completed: false},
-  //     {name: 'Kannada', completed: false},
-  //     {name: 'Tamil', completed: false},
-  //   ]
-  // })
-
-  // readonly partiallyCompleted = computed(()=>{
-  //   const lang = this.languages();
-  //   if(!lang.suboptions){
-  //     return false;
-  //   }
-  //   return lang.suboptions.some(t=>t.completed) && !lang.suboptions.every(t=>t.completed);
-  // })
-
-  // update(completed: boolean, index?: number){
-  //   this.languages.update(lang=>{
-  //     if(index==undefined){
-  //       lang.completed = completed;
-  //       lang.suboptions?.forEach(t=>(t.completed=completed))
-  //     }else{
-  //       lang.suboptions![index].completed = completed;
-  //       lang.completed = lang.suboptions?.every(t=>t.completed) ?? true;
-  //     }
-  //     return {...lang}
-  //   })
-  // }
 
   get Selected() : string[] {
     return this.firstFormGroup.controls.languages.value;
@@ -192,20 +161,62 @@ export class AddHelperComponent implements OnInit {
 
   private _snackBar = inject(MatSnackBar)
 
-  onSubmit(){
-    this._snackBar.open("Form submitted successfully", 'ok', {duration: 3000, horizontalPosition: 'right', verticalPosition: 'bottom'})
-    console.log(this.firstFormGroup.controls.profilepic.value)
-    console.log(this.firstFormGroup.controls.typeOfService.value)
-    console.log(this.firstFormGroup.controls.organisationName.value)
-    console.log(this.firstFormGroup.controls.fullName.value)
-    console.log(this.firstFormGroup.controls.languages.value)
-    console.log(this.firstFormGroup.controls.gender.value)
-    console.log(this.firstFormGroup.controls.phone.value)
-    console.log(this.firstFormGroup.controls.email.value)
-    console.log(this.firstFormGroup.controls.vehicleType.value)
-    console.log(this.firstFormGroup.controls.vehicleNumber.value)
-    console.log(this.firstFormGroup.controls.docType.value)
-    console.log(this.firstFormGroup.controls.KYCDoc.value)
-    console.log(this.secondFormGroup.controls.additionalDocs.value)
+  onSubmit() {
+  if (this.firstFormGroup.invalid) {
+    this._snackBar.open("Please fill all required fields", 'ok', { duration: 3000 });
+    return;
   }
+  const formData = new FormData();
+  const first = this.firstFormGroup.value;
+  const second = this.secondFormGroup.value;
+
+  formData.append('serviceType', first.typeOfService ?? '');
+  formData.append('organisationName', first.organisationName ?? '');
+  formData.append('fullName', first.fullName ?? '');
+  formData.append('gender', first.gender?? '');
+  formData.append('countryCode', first.contryCode?? '');
+  formData.append('phoneNumber', first.phoneNumber ?? '');
+  formData.append('phone', first.phone?? '');
+  if (first.email) formData.append('email', first.email);
+  formData.append('docType', first.docType?? '');
+
+  if (first.vehicleType && first.vehicleType !== 'None') {
+    formData.append('vehicleType', first.vehicleType);
+    if (first.vehicleNumber) formData.append('vehicleNumber', first.vehicleNumber);
+  }
+
+  if (Array.isArray(first.languages)) {
+    first.languages.forEach((lang: string) => {
+      formData.append('language[]', lang);
+    });
+  }
+
+  if (first.profilepic && typeof first.profilepic==='object' && 'name' in  first.profilepic) {
+    formData.append('profilePicUrl', first.profilepic);
+  }
+
+  if (first.KYCDoc &&  typeof first.KYCDoc==='object' && 'name' in first.KYCDoc) {
+    formData.append('kycDocUrl', first.KYCDoc);
+  }
+
+  if (second.additionalDocs && typeof second.additionalDocs==='object' && 'name' in second.additionalDocs) {
+    formData.append('additionalDoc', second.additionalDocs);
+  }
+
+  this.helperService.addHelper(formData).subscribe({
+    next: (res) => {
+      this._snackBar.open("Helper added successfully", 'ok', { duration: 3000 });
+      console.log("Form submitted successfully");
+    },
+    error: (err) => {
+      this._snackBar.open("Submission failed", 'ok', { duration: 3000 });
+      console.error("Error:", err);
+    }
+  });
+}
+
+goBackToHome(){
+  this.router.navigate(['/'])
+}
+
 }

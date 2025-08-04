@@ -1,54 +1,56 @@
-import { Type } from "class-transformer"
-import { IsArray, IsDate, IsEmail, isEmail, IsNotEmpty, IsOptional, IsString } from "class-validator"
+import { Type } from "class-transformer";
+import {IsArray,IsDate,IsEmail,IsNotEmpty,IsOptional,IsString} from "class-validator";
 
-export class CreateHelperDto{
-    @IsOptional()
-    profilePicurl? : string
+export class CreateHelperDto {
+  @IsString()
+  @IsNotEmpty()
+  serviceType: string;
 
-    @IsString()
-    @IsNotEmpty()
-    serviceType: string
+  @IsString()
+  @IsNotEmpty()
+  organisationName: string;
 
-    @IsString()
-    @IsNotEmpty()
-    organisationName: string
+  @IsString()
+  @IsNotEmpty()
+  fullName: string;
 
-    @IsString()
-    @IsNotEmpty()
-    fullName: string
+  @IsArray()
+  @IsNotEmpty()
+  language: string[];
 
-    @IsNotEmpty()
-    @IsArray()
-    language: Array<string>
+  @IsString()
+  @IsNotEmpty()
+  gender: string;
 
-    @IsString()
-    @IsNotEmpty()
-    gender: string
+  @IsString()
+  @IsNotEmpty()
+  countryCode: string
 
-    @IsString()
-    @IsNotEmpty()
-    phone: string
-    
-    @IsOptional()
-    @IsEmail()
-    email? : string
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber: string
 
-    @IsOptional()
-    vehicleType? : string
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
 
-    @IsString()
-    @IsNotEmpty()
-    docType: string
+  @IsOptional()
+  @IsEmail()
+  email?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    KYCDocurl: string
+  @IsOptional()
+  vehicleType?: string;
 
-    @IsOptional()
-    additionalDoc? : string
+  @IsOptional()
+  vehicleNumber?: string;
 
-    @IsOptional()
-    @Type(()=>Date) //gotta know why this is used
-    @IsDate()
-    DOJ? : Date
+  @IsString()
+  @IsNotEmpty()
+  docType: string;
+
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  DOJ?: Date;
 }

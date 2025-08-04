@@ -1,0 +1,120 @@
+<div *ngIf="!isAddHelperRoute">
+  <app-header></app-header>
+
+  <nav class="navbar">
+    <div>
+      <button mat-raised-button [matMenuTriggerFor]="menu">
+        <mat-icon>swap_vert_outlined</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="sort-menu">
+        <button (click)="sortHelper('name')">Helpers Name(A-Z)</button>
+        <button (click)="sortHelper('code')">Employee ID</button>
+      </mat-menu>
+      <button mat-raised-button>
+        <mat-icon>filter_alt_outlined</mat-icon>
+      </button>
+      <button mat-raised-button>
+        <mat-icon>calender</mat-icon>
+      </button>
+      {{Helpers.length}} helpers
+    </div>
+    <div>
+      <button mat-raised-button color="primary" [routerLink]="['/add-helper']">+Add-Helper</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="left-list">
+      <div class="helper-item" *ngFor="let helper of Helpers" (click)="selectHelper(helper)" >
+        <img
+          class="profile-pic"
+          [src]="'http://localhost:3000/uploads/' + helper.profilePicUrl"
+          alt="Profile"
+        />
+        <div class="helper-details">
+          <div class="helper-name">{{ helper.fullName }}</div>
+          <div class="helper-service">{{ helper.serviceType }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="profile-section" *ngIf="selectedHelper">
+        <div class="helper-profile">
+          <div class="image-name-type">
+            <img
+              class="profile-pic"
+              [src]="'http://localhost:3000/uploads/' + selectedHelper.profilePicUrl"
+              alt="Profile"
+            />
+            <div class="content-helper-name">
+              <h2>{{ selectedHelper.fullName }}</h2>
+              {{ selectedHelper.serviceType }}
+            </div>
+          </div>
+          <div class="edit-delete-buttons">
+              <button mat-raised-button (click)="editHelper(selectedHelper._id)">
+                <mat-icon>edit_outlined</mat-icon>
+              </button>
+              <button mat-raised-button (click)="openDeleteDialog()">
+                <mat-icon>delete_outlined</mat-icon>
+              </button>
+          </div>
+        </div>
+        <strong>Employee ID</strong> <mat-divider></mat-divider>
+        <p><strong>Identification Card:</strong> {{ selectedHelper.employeeIDurl }}</p>
+        <p><strong>Employee code:</strong> {{ selectedHelper.employeeCode }}</p>
+        <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
+        <p><strong>Gender:</strong> {{ selectedHelper.gender }}</p>
+        <p><strong>Language(s):</strong> {{ selectedHelper.language.join(', ') }}</p>
+        <p><strong>Mobile No:</strong> {{ selectedHelper.phone }}</p>
+        <p><strong>Email:</strong> {{ selectedHelper.email}}</p>
+        <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl">View</a></p>
+        <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
+        <p><strong>Type:</strong> {{ selectedHelper.serviceType }}</p>
+        <p><strong>Organisation:</strong> {{ selectedHelper.organisationName }}</p>
+        <p><strong>Date:</strong> {{ formatDateTime(selectedHelper.DOJ) }}</p>
+
+      </div>
+
+      <div class="profile-section" *ngIf="!selectedHelper">
+        <div class="helper-profile">
+          <div class="image-name-type">
+            <img
+              class="profile-pic"
+              [src]="'http://localhost:3000/uploads/' + Helpers[0].profilePicUrl"
+              alt="Profile"
+            />
+            <div class="content-helper-name">
+              <h2>{{Helpers[0].fullName }}</h2>
+              {{ Helpers[0].serviceType }}
+            </div>
+          </div>
+          <div class="edit-delete-buttons">
+              <button mat-raised-button (click)="editHelper(Helpers[0]._id)">
+                <mat-icon>edit_outlined</mat-icon>
+              </button>
+              <button mat-raised-button (click)="openDeleteDialog()">
+                <mat-icon>delete_outlined</mat-icon>
+              </button>
+          </div>
+        </div>
+        <strong>Employee ID</strong> <mat-divider></mat-divider>
+        <p><strong>Identification Card:</strong> {{ Helpers[0].employeeIDurl }}</p>
+        <p><strong>Employee code:</strong> {{ Helpers[0].employeeCode }}</p>
+        <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
+        <p><strong>Gender:</strong> {{ Helpers[0].gender }}</p>
+        <p><strong>Language(s):</strong> {{ Helpers[0].language.join(', ') }}</p>
+        <p><strong>Mobile No:</strong> {{ Helpers[0].phone }}</p>
+        <p><strong>Email:</strong> {{ Helpers[0].email}}</p>
+        <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + Helpers[0].kycDocUrl">View</a></p>
+        <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
+        <p><strong>Type:</strong> {{ Helpers[0].serviceType }}</p>
+        <p><strong>Organisation:</strong> {{ Helpers[0].organisationName }}</p>
+        <p><strong>Date:</strong> {{ formatDateTime(Helpers[0].DOJ) }}</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<router-outlet></router-outlet>

@@ -1,17 +1,56 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UploadedFile, UploadedFiles, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { HelperService } from "./helper.service";
 import { CreateHelperDto } from "./dto/CreateHelper.dto";
 import mongoose from "mongoose";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import {diskStorage} from 'multer'
+import { extname } from "path";
 
 @Controller('helper')
 export class HelperController{
     constructor(private helperService: HelperService){}
     @Post('add-helper')
-    @UsePipes(new ValidationPipe())
-    createHelper(@Body() createHelperDto: CreateHelperDto){
-        console.log(createHelperDto);
-        return this.helperService.createHelper(createHelperDto);
+    @UseInterceptors(FileFieldsInterceptor(
+    [
+      { name: 'profilePicUrl', maxCount: 1 },
+      { name: 'kycDocUrl', maxCount: 1 },
+      { name: 'additionalDoc', maxCount: 1 },
+    ],
+    {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    },
+  ))
+  @UsePipes(new ValidationPipe())
+  async createHelper(
+    @Body() createHelperDto: CreateHelperDto,
+    @UploadedFiles() files: {
+      profilePicUrl?: Express.Multer.File[];
+      kycDocUrl?: Express.Multer.File[];
+      additionalDoc?: Express.Multer.File[];
+    },
+    ) {
+    if (!files.kycDocUrl || !files.kycDocUrl[0]) {
+      throw new BadRequestException('kycDocUrl file is required');
     }
+    const profilePicUrl = files.profilePicUrl?.[0]?.filename ?? null;
+    const kycDocUrl = files.kycDocUrl?.[0]?.filename;
+    const additionalDoc = files.additionalDoc?.[0]?.filename ?? null;
+    const finalHelper = {
+      ...createHelperDto,
+      profilePicUrl,
+      kycDocUrl,
+      additionalDoc,
+    };
+
+    console.log('Final Payload:', finalHelper);
+    return this.helperService.createHelper(finalHelper);
+  }
 
     @Get()
     getHelpers(){
