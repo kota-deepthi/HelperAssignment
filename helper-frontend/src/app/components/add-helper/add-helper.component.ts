@@ -62,11 +62,6 @@ export class AddHelperComponent implements OnInit {
 
   ngOnInit(): void {
     this.countryCode = this.countryCodeService.getCountryCode();
-
-    this.firstFormGroup.valueChanges.subscribe(val=>{
-      const fullNumber = `${val.contryCode??''}${val.phoneNumber??''}`
-      this.firstFormGroup.patchValue({phone: fullNumber}, {emitEvent: false});
-    })
   }
   
   openDocUpload(){
@@ -145,7 +140,6 @@ export class AddHelperComponent implements OnInit {
     gender:['', Validators.required],
     contryCode: ['+91', Validators.required],
     phoneNumber: ['', Validators.required],
-    phone:[''],
     email:['', Validators.email],
     vehicleType: ['None'],
     vehicleNumber:[''],
@@ -176,7 +170,6 @@ export class AddHelperComponent implements OnInit {
   formData.append('gender', first.gender?? '');
   formData.append('countryCode', first.contryCode?? '');
   formData.append('phoneNumber', first.phoneNumber ?? '');
-  formData.append('phone', first.phone?? '');
   if (first.email) formData.append('email', first.email);
   formData.append('docType', first.docType?? '');
 
@@ -205,11 +198,11 @@ export class AddHelperComponent implements OnInit {
 
   this.helperService.addHelper(formData).subscribe({
     next: (res) => {
-      this._snackBar.open("Helper added successfully", 'ok', { duration: 3000 });
+      this._snackBar.open("Helper added successfully", 'ok', { duration: 3000 , verticalPosition:'bottom', horizontalPosition:'right', panelClass:['success']});
       console.log("Form submitted successfully");
     },
     error: (err) => {
-      this._snackBar.open("Submission failed", 'ok', { duration: 3000 });
+      this._snackBar.open("Submission failed", 'ok', { duration: 3000 , verticalPosition:'bottom', horizontalPosition:'right', panelClass:['error']});
       console.error("Error:", err);
     }
   });

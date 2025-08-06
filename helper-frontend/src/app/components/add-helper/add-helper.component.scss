@@ -71,3 +71,11 @@ mat-vertical-stepper {
   padding: 40px;
   filter:  brightness(0.8);
 }
+
+::ng-deep .success{
+  color: green
+}
+
+::ng-deep .error {
+  color: red
+}

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatOption, MatOptionSelectionChange } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs'; 
 import { map } from 'rxjs/operators'; 
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface Helper {
     _id: string,
@@ -27,7 +28,6 @@ interface Helper {
     gender: string
     countryCode: string
     phoneNumber: string
-    phone: string
     email : string
     vehicleType : string
     vehicleNumber?: string
@@ -61,6 +61,8 @@ export class EditHelperComponent implements OnInit {
   secondFormGroup!: FormGroup;
   DOJ: any;
 
+  private _snackbar = inject(MatSnackBar)
+
   selectedFile: any = null;
   readonly MAX_MB = 5;
 
@@ -82,7 +84,6 @@ export class EditHelperComponent implements OnInit {
       gender: ['', Validators.required],
       contryCode: ['', Validators.required],
       phoneNumber: ['', Validators.required],
-      phone: [''],
       email: ['', Validators.email],
       vehicleType: ['None'],
       vehicleNumber: [null],
@@ -198,5 +199,58 @@ export class EditHelperComponent implements OnInit {
     }
     this.firstFormGroup.get('profilepic')?.setValue(this.selectedFile);
     this.firstFormGroup.get('profilepic')?.markAsDirty();
+  }
+
+  submit(){
+    if (this.firstFormGroup.invalid) {
+      this._snackbar.open("Please fill all required fields", 'ok', { duration: 3000, verticalPosition:'bottom', horizontalPosition:'right' });
+      return;
+    }
+    const formData = new FormData();
+    const first = this.firstFormGroup.value;
+    const second = this.secondFormGroup.value;
+
+    formData.append('serviceType', first.typeOfService ?? '');
+    formData.append('organisationName', first.organisationName ?? '');
+    formData.append('fullName', first.fullName ?? '');
+    formData.append('gender', first.gender?? '');
+    formData.append('countryCode', first.contryCode?? '');
+    formData.append('phoneNumber', first.phoneNumber ?? '');
+    if (first.email) formData.append('email', first.email);
+    formData.append('docType', first.docType?? '');
+
+    if (first.vehicleType && first.vehicleType !== 'None') {
+      formData.append('vehicleType', first.vehicleType);
+      if (first.vehicleNumber) formData.append('vehicleNumber', first.vehicleNumber);
+    }
+
+    if (Array.isArray(first.languages)) {
+      first.languages.forEach((lang: string) => {
+        formData.append('language[]', lang);
+      });
+    }
+
+    if (first.profilepic && typeof first.profilepic==='object' && 'name' in  first.profilepic) {
+      formData.append('profilePicUrl', first.profilepic);
+    }
+
+    if (first.KYCDoc &&  typeof first.KYCDoc==='object' && 'name' in first.KYCDoc) {
+      formData.append('kycDocUrl', first.KYCDoc);
+    }
+
+    if (second.additionalDocs && typeof second.additionalDocs==='object' && 'name' in second.additionalDocs) {
+      formData.append('additionalDoc', second.additionalDocs);
+    }
+    if(!this.recievedHelper?._id) return
+    this.helperService.editHelper(this.recievedHelper._id, formData).subscribe({
+      next: (res) => {
+        this._snackbar.open("Changes saved", 'ok', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right', panelClass:['success'] });
+        console.log("Form edited successfully");
+      },
+      error: (err) => {
+        this._snackbar.open("Something went wrong", 'ok', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right' , panelClass:['error']});
+        console.error("Error:", err);
+      }
+    });
   }
 }

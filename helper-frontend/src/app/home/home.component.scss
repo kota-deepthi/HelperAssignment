@@ -1,7 +1,17 @@
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+}
+
+.nav-left{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .page-content {
@@ -79,8 +89,19 @@
   flex-direction: row;
 }
 
-.sort-menu{
+.non-profile-pic {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  align-items: center;
+  background-color: rgb(210, 207, 207);
+  justify-content: center;
+  
+}
+
+.search-input{
+  box-sizing: border-box;
+  padding: 9px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1)
 }

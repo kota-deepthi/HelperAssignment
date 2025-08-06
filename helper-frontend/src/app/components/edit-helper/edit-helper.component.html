@@ -161,16 +161,18 @@
           <a [href]="'http://localhost:3000/uploads/' + recievedHelper?.kycDocUrl" target="_blank">View</a>
         </p>
       </div>
-      <button>Save</button>
+      <button (click)="submit()">Save</button>
     </form>
 
-    <!-- <form *ngIf="selectedIndex === 2" [formGroup]="secondFormGroup">
-      <p><strong>Additional Documents:</strong><br>
-          <a [href]="'http://localhost:3000/uploads/' + recievedHelper.additionalDoc" target="_blank">View</a>
+    <form *ngIf="selectedIndex === 2" [formGroup]="secondFormGroup" class="secondForm">
+      <div>
+        <p><strong>Additional Documents:</strong><br>
+          <a [href]="'http://localhost:3000/uploads/' + recievedHelper?.additionalDoc" target="_blank">View</a>
         </p>
-    </form> -->
-    <form *ngIf="selectedIndex===2" >
-
+      </div>
+      <div>
+        <button (click)="submit()">Save</button>
+      </div>
     </form>
   </div>
 </div>

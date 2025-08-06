@@ -27,7 +27,15 @@ export class HelperService {
   }
 
   editHelper(id: string, data: any){
-    return this.http.put(`http://localhost:3000/${id}`, data)
+    return this.http.patch(`http://localhost:3000/helper/${id}`, data)
+  }
+
+  searchHelper(search: string){
+    return this.http.get(`http://localhost:3000/helper/searchBy/${search}`)
+  }
+
+  filterHelper(filter: {service: string[], organisation: string[]}){
+    return this.http.post(`http://localhost:3000/helper/filter`, filter)
   }
 
 }

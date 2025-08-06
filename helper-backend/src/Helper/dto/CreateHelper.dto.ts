@@ -30,10 +30,6 @@ export class CreateHelperDto {
   @IsNotEmpty()
   phoneNumber: string
 
-  @IsString()
-  @IsNotEmpty()
-  phone: string;
-
   @IsOptional()
   @IsEmail()
   email?: string;

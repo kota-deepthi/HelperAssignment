@@ -1,3 +1,4 @@
+
 header {
   display: flex;
   justify-content: space-between;
@@ -37,13 +38,21 @@ header {
     flex-direction: column;
     justify-content: flex-start;
     width: 300px;
-    
+    background-color: rgba(236, 234, 234, 0.556);
+    height: 100%;
 }
 
+.right{
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  padding: 20px;
+  width: 100%;
+}
 .page-content {
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 100%;
 }
 
 ::ng-deep .select-all-option .mat-pseudo-checkbox {
@@ -62,4 +71,19 @@ header {
   border-radius: 80px;
   padding: 40px;
   filter:  brightness(0.8);
+}
+
+.secondForm{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+::ng-deep .error {
+  color: red
+}
+
+::ng-deep .success {
+  color: green
 }

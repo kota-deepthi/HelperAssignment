@@ -27,9 +27,6 @@ export class Helper{
     gender: string
 
     @Prop({required: true})
-    phone: string
-
-    @Prop({required: true})
     countryCode: string
 
     @Prop({required: true})

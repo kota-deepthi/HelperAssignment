@@ -10,6 +10,13 @@ import { MatDivider } from '@angular/material/divider';
 import { DeleteDialogComponent } from '../components/delete-dialog/delete-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu'
+import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatOption, MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 interface Helper {
     _id: string,
@@ -35,13 +42,18 @@ interface Helper {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, AddHelperComponent, RouterOutlet, NgIf, HeaderComponent, MatIconModule, MatButtonModule, NgIf, NgFor, MatDivider,
-    DeleteDialogComponent, MatMenuModule
+  imports: [RouterLink, AddHelperComponent, RouterOutlet, HeaderComponent, MatIconModule, MatButtonModule, NgIf, NgFor, MatDivider,
+    DeleteDialogComponent, MatMenuModule, ReactiveFormsModule, MatFormField, MatSelectModule, MatOption, MatFormFieldModule, MatInputModule, MatOptionModule,
+    MatCheckbox
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
+
+  typeofserviceoptions= ['cook', 'nurse', 'driver', 'maid']
+  organisationoptions=['ASBL', 'Spring helpers']
+
   constructor(private router: Router,
     private helperService: HelperService,
     private dialog: MatDialog
@@ -52,17 +64,87 @@ export class HomeComponent implements OnInit {
   }
 
   Helpers: Helper[] = []
-
+  searchField = new FormControl('')
+  filteredHelpers: any
+  serviceFilter = new FormControl<string[]>([])
+  organisationFilter = new FormControl<string[]>([])
+    
   ngOnInit(): void {
     this.helperService.getHelper().subscribe({
       next: (helpers)=>{
         this.Helpers = helpers;
+        this.filteredHelpers = helpers;
         console.log(this.Helpers);
       },
       error: (err) =>{
         console.log("Something went wrong while fetching the data...")
       }
     });
+
+    this.setUpSearch()    
+  }
+
+  setUpSearch(): void {this.searchField.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe((search)=>{
+    if(search==''){
+      this.filteredHelpers = this.Helpers;
+    }else{
+      this.searchHelpers(search);
+    }
+    });
+}
+
+
+  searchHelpers(search: any) {
+      this.helperService.searchHelper(search).subscribe({
+      next: (helpers) => {
+        console.log(helpers)
+        this.filteredHelpers = helpers;
+      },
+      error: (err) => {
+        console.log('Search error:', err);
+      },
+    });
+  }
+
+  applyFilters(){
+    this.helperService.filterHelper({service: this.serviceFilter.value??[], organisation: this.organisationFilter.value??[]}).subscribe({
+      next: (helpers)=> {
+        this.filteredHelpers = helpers;
+      },
+      error: (err)=>{
+        console.log("something went worng while filtering", err)
+      }
+    })
+  }
+
+  onSelectionChange(event: MatSelectChange){
+    this.serviceFilter.patchValue(event.value)
+  }
+
+  isAllSelected(filter: FormControl): boolean{
+    if(filter === this.serviceFilter){
+      return this.serviceFilter.value?.length === this.typeofserviceoptions.length
+    }else{
+      return this.organisationFilter.value?.length === this.organisationoptions.length
+    }
+  }
+
+  isIndeterminate(filter: FormControl){
+    if(filter === this.serviceFilter){
+      return this.serviceFilter.value && this.serviceFilter.value?.length > 0 && this.serviceFilter.value?.length < this.typeofserviceoptions.length;
+    }else{
+      return this.organisationFilter.value && this.organisationFilter.value?.length> 0 && this.organisationFilter.value?.length < this.organisationoptions.length;
+    }
+  }
+
+  toggleAll(filter: FormControl){
+    const options = filter===this.serviceFilter ? this.typeofserviceoptions : this.organisationoptions
+    if(!this.isAllSelected(filter)){
+      filter.patchValue([...options])
+      console.log(filter)
+    }else{
+      filter.patchValue([])
+    }
   }
 
   selectedHelper: Helper | null = null;
@@ -107,6 +189,11 @@ export class HomeComponent implements OnInit {
 
   editHelper(id: string) {
     this.router.navigate([`/edit-helper/${id}`])
+  }
+
+  getInitial(name: string): string{
+    const splitchars= name.split('');
+    return (splitchars[0] + splitchars[1]).toUpperCase();
   }
 
 }

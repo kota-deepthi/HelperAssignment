@@ -1,22 +1,101 @@
 <div *ngIf="!isAddHelperRoute">
   <app-header></app-header>
-
   <nav class="navbar">
-    <div>
-      <button mat-raised-button [matMenuTriggerFor]="menu">
-        <mat-icon>swap_vert_outlined</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" class="sort-menu">
-        <button (click)="sortHelper('name')">Helpers Name(A-Z)</button>
-        <button (click)="sortHelper('code')">Employee ID</button>
+    <div class="nav-left">
+      <div>
+        <button mat-raised-button [matMenuTriggerFor]="sortMenu">
+          <mat-icon>swap_vert_outlined</mat-icon>
+        </button>
+        <mat-menu #sortMenu="matMenu">
+          sort by
+        <button mat-menu-item (click)="sortHelper('name')">Helpers Name(A-Z)</button>
+        <button mat-menu-item (click)="sortHelper('code')">Employee ID</button>
       </mat-menu>
-      <button mat-raised-button>
-        <mat-icon>filter_alt_outlined</mat-icon>
+      </div>
+      <div>
+        <button mat-raised-button [matMenuTriggerFor]="filterMenu">
+          <mat-icon>filter_alt_outlined</mat-icon>
+        </button>
+        <mat-menu #filterMenu="matMenu">
+          Filter By
+          <div mat-menu-item (click)="$event.stopPropagation()">
+            <label>Service</label><br>
+            <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
+              <mat-select [formControl]="serviceFilter" placeholder="Select Service" multiple (selectionChange)="onSelectionChange($event)">
+                <mat-checkbox
+                class="mat-option-pseudo-checkbox"
+                [checked]="isAllSelected(serviceFilter)"
+                [indeterminate] = "isIndeterminate(serviceFilter)"
+                (change) = "toggleAll(serviceFilter)"
+                >
+                select All
+                <mat-divider></mat-divider>
+                {{serviceFilter?.value?.length}} / {{typeofserviceoptions.length}}
+                </mat-checkbox>
+
+                <mat-option *ngFor="let service of typeofserviceoptions" [value]="service">
+                  {{service}}
+                </mat-option>
+
+                <mat-select-trigger>
+                    {{ serviceFilter!.value![0] || '' }}
+                    @if (serviceFilter!.value!.length > 1) {
+                      <span class="additional-select-languages">
+                        +{{ serviceFilter!.value!.length - 1 }}
+                      </span>
+                    }
+                  </mat-select-trigger>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div mat-menu-item (click)="$event.stopPropagation()">
+            <label>Organisation</label><br>
+            <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
+              <mat-select [formControl]="organisationFilter" placeholder="Select Organisation" multiple (selectionChange)="onSelectionChange($event)">
+                <mat-checkbox
+                class="mat-option-pseudo-checkbox"
+                [checked]="isAllSelected(organisationFilter)"
+                [indeterminate] = "isIndeterminate(organisationFilter)"
+                (change) = "toggleAll(organisationFilter)"
+                >
+                select All
+                <mat-divider></mat-divider>
+                {{organisationFilter?.value?.length}} / {{organisationoptions.length}}
+                </mat-checkbox>
+
+                <mat-option *ngFor="let org of organisationoptions" [value]="org">
+                  {{org}}
+                </mat-option>
+
+                <mat-select-trigger>
+                    {{ organisationFilter!.value![0] || '' }}
+                    @if (organisationFilter!.value!.length > 1) {
+                      <span class="additional-select-languages">
+                        +{{ organisationFilter!.value!.length - 1 }}
+                      </span>
+                    }
+                  </mat-select-trigger>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-raised-button colot="primary" (click)="applyFilters()">Apply</button>
+        </mat-menu>
+      </div>
+      <div>
+        <button mat-raised-button>
+        <mat-icon>calander_today</mat-icon>
       </button>
-      <button mat-raised-button>
-        <mat-icon>calender</mat-icon>
-      </button>
-      {{Helpers.length}} helpers
+      </div>
+      <div>
+        <input type="text" [formControl]="searchField" placeholder="Name, Employee ID, Phone" class="search-input" >
+      </div>
+       <div *ngIf="searchField.value===''">
+        {{Helpers.length}} Helpers
+       </div>
+       <div *ngIf="searchField.value!==''">
+        {{filteredHelpers.length}} of {{Helpers.length}} results
+       </div>
     </div>
     <div>
       <button mat-raised-button color="primary" [routerLink]="['/add-helper']">+Add-Helper</button>
@@ -25,12 +104,17 @@
 
   <div class="page-content">
     <div class="left-list">
-      <div class="helper-item" *ngFor="let helper of Helpers" (click)="selectHelper(helper)" >
-        <img
-          class="profile-pic"
-          [src]="'http://localhost:3000/uploads/' + helper.profilePicUrl"
-          alt="Profile"
-        />
+      <div class="helper-item" *ngFor="let helper of filteredHelpers" (click)="selectHelper(helper)" >
+        <div *ngIf="helper.profilePicUrl">
+          <img
+            class="profile-pic"
+            [src]="'http://localhost:3000/uploads/' + helper.profilePicUrl"
+            alt="Profile"
+          />
+        </div>
+        <div *ngIf="helper.profilePicUrl===null || helper.profilePicUrl===undefined" class="non-profile-pic">
+          {{getInitial(helper.fullName)}}
+        </div>
         <div class="helper-details">
           <div class="helper-name">{{ helper.fullName }}</div>
           <div class="helper-service">{{ helper.serviceType }}</div>
@@ -41,11 +125,16 @@
       <div class="profile-section" *ngIf="selectedHelper">
         <div class="helper-profile">
           <div class="image-name-type">
-            <img
-              class="profile-pic"
-              [src]="'http://localhost:3000/uploads/' + selectedHelper.profilePicUrl"
-              alt="Profile"
-            />
+            <div *ngIf="selectedHelper.profilePicUrl">
+              <img
+                class="profile-pic"
+                [src]="'http://localhost:3000/uploads/' + selectedHelper.profilePicUrl"
+                alt="Profile"
+              />
+            </div>
+            <div *ngIf="selectedHelper.profilePicUrl===null || selectedHelper.profilePicUrl===undefined" class="non-profile-pic">
+              {{getInitial(selectedHelper.fullName)}}
+            </div>
             <div class="content-helper-name">
               <h2>{{ selectedHelper.fullName }}</h2>
               {{ selectedHelper.serviceType }}
@@ -66,7 +155,7 @@
         <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
         <p><strong>Gender:</strong> {{ selectedHelper.gender }}</p>
         <p><strong>Language(s):</strong> {{ selectedHelper.language.join(', ') }}</p>
-        <p><strong>Mobile No:</strong> {{ selectedHelper.phone }}</p>
+        <p><strong>Mobile No:</strong> {{ selectedHelper.countryCode }}{{selectedHelper.phoneNumber}}</p>
         <p><strong>Email:</strong> {{ selectedHelper.email}}</p>
         <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl">View</a></p>
         <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
@@ -76,14 +165,19 @@
 
       </div>
 
-      <div class="profile-section" *ngIf="!selectedHelper">
+      <div class="profile-section" *ngIf="!selectedHelper && Helpers.length>0">
         <div class="helper-profile">
           <div class="image-name-type">
-            <img
-              class="profile-pic"
-              [src]="'http://localhost:3000/uploads/' + Helpers[0].profilePicUrl"
-              alt="Profile"
-            />
+            <div *ngIf="Helpers[0]?.profilePicUrl">
+              <img
+                class="profile-pic"
+                [src]="'http://localhost:3000/uploads/' + Helpers[0].profilePicUrl"
+                alt="Profile"
+              />
+            </div>
+            <div *ngIf="Helpers[0]?.profilePicUrl===null || Helpers[0]?.profilePicUrl===undefined" class="non-profile-pic">
+              {{getInitial(Helpers[0].fullName)}}
+            </div>
             <div class="content-helper-name">
               <h2>{{Helpers[0].fullName }}</h2>
               {{ Helpers[0].serviceType }}
@@ -104,14 +198,16 @@
         <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
         <p><strong>Gender:</strong> {{ Helpers[0].gender }}</p>
         <p><strong>Language(s):</strong> {{ Helpers[0].language.join(', ') }}</p>
-        <p><strong>Mobile No:</strong> {{ Helpers[0].phone }}</p>
+        <p><strong>Mobile No:</strong> {{ Helpers[0].countryCode }} {{Helpers[0].phoneNumber}}</p>
         <p><strong>Email:</strong> {{ Helpers[0].email}}</p>
         <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + Helpers[0].kycDocUrl">View</a></p>
         <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
         <p><strong>Type:</strong> {{ Helpers[0].serviceType }}</p>
         <p><strong>Organisation:</strong> {{ Helpers[0].organisationName }}</p>
         <p><strong>Date:</strong> {{ formatDateTime(Helpers[0].DOJ) }}</p>
-
+      </div>
+      <div *ngIf="!selectedHelper && Helpers.length===0">
+        No Helpers found
       </div>
     </div>
   </div>

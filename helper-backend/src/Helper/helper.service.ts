@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Options } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Helper } from "src/Schemas/Helper.schema";
@@ -28,11 +28,40 @@ export class HelperService{
         return this.helperModel.findById(id);
     }
 
-    async updateHelper(id: string, createHelperDto: CreateHelperDto){
-        return await this.helperModel.findByIdAndUpdate(id, createHelperDto, {new:true})
+    async updateHelper(id: string, updateData: Partial<CreateHelperDto>){
+        return await this.helperModel.findByIdAndUpdate(id, updateData, {new:true})
     }
 
     deleteHelper(id: string){
         return this.helperModel.findByIdAndDelete(id);
     }
+
+    getHelperByName(search: string){
+        return this.helperModel.find({fullName: {$regex: search, $options: 'i'}})
+    }
+
+    getHelperByPhone(search: string){
+        return this.helperModel.find({phoneNumber: {$regex: search, $options: 'i'}})
+    }
+
+    getHelperByEmpID(search: string){
+        return this.helperModel.find({$expr:{
+            $regexMatch : {
+                input : {$toString: '$employeeCode'},
+                regex: search
+            }
+        }})
+    }
+
+    async getHelperByFilter(filter: { service: string[], organisation: string[] }) {
+        const query: any = {};
+        if(filter.service && filter.service.length > 0) {
+            query.serviceType = { $in:filter.service };
+        }
+        if(filter.organisation && filter.organisation.length > 0) {
+            query.organisationName = { $in:filter.organisation };
+        }
+        return await this.helperModel.find(query).exec(); 
+    }
+
 }
