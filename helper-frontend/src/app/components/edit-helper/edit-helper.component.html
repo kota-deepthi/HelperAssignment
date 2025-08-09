@@ -14,7 +14,7 @@
 
   <div class="right">
     <form *ngIf="selectedIndex === 1" [formGroup]="firstFormGroup">
-      <div *ngIf="!firstFormGroup.get('profilepic')">
+      <div *ngIf="!firstFormGroup.get('profilepic')?.value">
         <img src="assets/UploadImage.png" (click)="fileInput.click()" class="upload-image">
         <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jpeg,image/png">
         <span class="selected-file">{{ selectedFile?.name }}</span>

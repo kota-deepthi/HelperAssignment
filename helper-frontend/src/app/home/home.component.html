@@ -8,8 +8,10 @@
         </button>
         <mat-menu #sortMenu="matMenu">
           sort by
-        <button mat-menu-item (click)="sortHelper('name')"  (click)="$event.stopPropagation()">Helpers Name(A-Z)</button>
-        <button mat-menu-item (click)="sortHelper('code')" (click)="$event.stopPropagation()">Employee ID</button>
+          <div>
+            <button mat-menu-item (click)="sortHelper('name')"  (click)="$event.stopPropagation()">Helpers Name(A-Z)</button>
+            <button mat-menu-item (click)="sortHelper('code')" (click)="$event.stopPropagation()">Employee ID</button>
+          </div>
       </mat-menu>
       </div>
       <div>
@@ -105,7 +107,7 @@
         </button>
       </div>
       <div>
-        <input type="text" [formControl]="searchField" placeholder="🔎 Name, Employee ID, Phone" class="search-input" >
+        <input type="text" matInput [formControl]="searchField" placeholder="🔎 Name, Employee ID, Phone" class="search-input" >
       </div>
        <div *ngIf="searchField.value==='' && (serviceFilter.value?.length || 0)===0 && (organisationFilter?.value?.length || 0)===0 && filteredHelpers?.length || 0 === Helpers?.length || 0">
         {{Helpers.length || 0}} Helpers
@@ -114,7 +116,7 @@
         {{filteredHelpers.length || 0}} of {{Helpers.length || 0}} results
        </div>
     </div>
-    <div>
+    <div style="display: flex; gap: 8px;">
       <button mat-raised-button>
         <mat-icon>file_download_outlined</mat-icon>
       </button>
@@ -124,7 +126,7 @@
 
   <div class="page-content">
     <div class="left-list">
-      <div class="helper-item" *ngFor="let helper of filteredHelpers" (click)="selectHelper(helper)" >
+      <div class="helper-item" *ngFor="let helper of filteredHelpers" [ngClass]="{'selected-item': helper === selectedHelper}" (click)="selectHelper(helper)" >
         <div *ngIf="helper.profilePicUrl">
           <img
             class="profile-pic"
@@ -216,7 +218,7 @@
         </div>
       </div>
 
-      <div class="profile-section" *ngIf="!selectedHelper && filteredHelpers?.length||0>0">
+      <!-- <div class="profile-section" *ngIf="!selectedHelper && filteredHelpers?.length||0>0">
         <div class="helper-profile">
           <div class="image-name-type">
             <div *ngIf="Helpers[0]?.profilePicUrl">
@@ -294,7 +296,7 @@
           <div class="display-content"><p>Date:</p> {{ formatDateTime(Helpers[0].DOJ) }}</div>
         </div>
         
-      </div>
+      </div> -->
       <div *ngIf="!selectedHelper && filteredHelpers?.length===0">
         No Helpers found
       </div>

@@ -1,21 +1,24 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDivider } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-docdialog',
   standalone: true,
-  imports: [FormsModule, MatSelectModule, MatFormFieldModule, NgIf, NgFor],
+  imports: [FormsModule, MatSelectModule, MatFormFieldModule, NgIf, NgFor, MatIconModule, MatDivider, MatButtonModule],
   templateUrl: './docdialog.component.html',
   styleUrl: './docdialog.component.scss'
 })
 export class DocdialogComponent {
 
-docTypes: string[] = ['Aadhar Card', 'PAN', 'Voter ID', 'Passport'];
-
+  @ViewChild('fileInput') fileInput!: ElementRef
+  docTypes: string[] = ['Aadhar Card', 'PAN', 'Voter ID', 'Passport'];
   selectedFile: File | null = null;
   docType: string = '';
 
@@ -45,6 +48,13 @@ docTypes: string[] = ['Aadhar Card', 'PAN', 'Voter ID', 'Passport'];
   upload() {
     if (this.selectedFile && this.docType) {
       this.dialogRef.close({ docType: this.docType, file: this.selectedFile });
+    }
+  }
+
+  remove(){
+    this.selectedFile = null
+    if(this.fileInput){
+      this.fileInput.nativeElement.value=''
     }
   }
 

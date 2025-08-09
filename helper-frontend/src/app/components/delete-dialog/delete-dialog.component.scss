@@ -1,0 +1,52 @@
+.delete-dialog{
+    width: 500px;
+    height: 180px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.hint {
+    color: gray;
+    font-size: small;
+    margin-top: 0px;
+    margin-bottom: 30px;
+}
+
+.heading {
+    display: flex;
+    gap: 5px;
+    margin-top: 0px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 18px
+}
+
+.delete {
+    display: flex;
+    align-items: center;
+    background-color: rgb(221,81,65);
+    color: white;
+    border-radius: 5px;
+}
+
+.buttons button {
+  padding: 10px 10px; 
+  font-size: 14px;    
+}
+
+
+.buttons .delete mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 20px;
+}

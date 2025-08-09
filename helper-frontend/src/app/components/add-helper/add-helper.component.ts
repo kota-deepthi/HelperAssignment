@@ -20,6 +20,7 @@ import { HelperService } from '../../services/helper.service';
 import { Router, RouterLink } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
 import { SuccesssdialogComponent } from '../successsdialog/successsdialog.component';
+import { QrdialogComponent } from '../qrdialog/qrdialog.component';
 @Component({
   selector: 'app-add-helper',
   standalone: true,
@@ -198,6 +199,8 @@ export class AddHelperComponent implements OnInit {
     return;
   }
 
+  
+
   const formData = new FormData();
   const first = this.firstFormGroup.value;
   const second = this.secondFormGroup.value;
@@ -240,8 +243,14 @@ export class AddHelperComponent implements OnInit {
       console.log("Form submitted successfully")
       setTimeout(()=>{
         successdialog.close()
-        this.router.navigate(['/'])
       }, 2000)
+      successdialog.afterClosed().subscribe(()=>{
+        const idDialog = this.dialog.open(QrdialogComponent, {data: {code: res.employeeCode, name:res.fullName, organisation:res.organisationName, service: res.typeOfService, doj:res.doj, phone:res.phoneNumber}})
+        idDialog.afterClosed().subscribe(()=>{
+          this.router.navigate(['/'])
+        })
+      })
+      
     },
     error: (err) => {
       this._snackBar.open("Submission failed", 'ok', { duration: 3000 , verticalPosition:'bottom', horizontalPosition:'right', panelClass:['error']});
@@ -270,12 +279,12 @@ export class AddHelperComponent implements OnInit {
   }
 
   goNext(stepper : MatStepper){
-    // if(this.firstFormGroup.valid){
-    //   this.selectedIndex = 1
-    // }else{
-    //   this.firstFormGroup.markAllAsTouched()
-    // }
-    this.selectedIndex = 1
+    if(this.firstFormGroup.valid){
+      this.selectedIndex = 1
+    }else{
+      this.firstFormGroup.markAllAsTouched()
+    }
+    // this.selectedIndex = 1
   }
 
   isMarkedAsTouched(){

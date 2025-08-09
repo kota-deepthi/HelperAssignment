@@ -1,9 +1,19 @@
-<h2 mat-dialog-title>Delete {{data.name}}</h2>
-<mat-dialog-content>
-  <p>You can't undo this action.</p>
-</mat-dialog-content>
-<mat-divider></mat-divider>
-<mat-dialog-actions>
-  <button matButton (click)="onClose()">Cancel</button>
-  <button mat-raised-button color="warn" (click)="onDelete()" >Delete</button>
-</mat-dialog-actions>
+<div class="delete-dialog">
+  <div class="top">
+      <mat-icon style="color: red">warning_amber</mat-icon>
+      <mat-icon style="cursor: pointer;" (click)="onClose()">close</mat-icon>
+  </div>
+  <div class="heading">
+    <h2 mat-dialog-title style="margin-top: 0px; margin-bottom: 4px;">Delete </h2>
+    <h2 mat-dialog-title style="color: red; margin-top: 0px; margin-bottom: 4px;"> {{data.name}} ({{data.service}})</h2>
+  </div>
+  <p class="hint">You can't undo this action.</p>
+  <mat-divider></mat-divider>
+  <mat-dialog-actions class="buttons">
+    <button mat-raised-button (click)="onClose()">Cancel</button>
+    <button mat-raised-button class="delete" (click)="onDelete()" >
+    <mat-icon>delete_outline</mat-icon><p style="font-size: medium; margin: 0px;">Delete</p>  
+    </button>
+  </mat-dialog-actions>
+
+</div>

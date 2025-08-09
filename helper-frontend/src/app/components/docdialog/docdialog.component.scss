@@ -1,0 +1,58 @@
+.dialog{
+    height: 450px;
+    width: 450px;
+    padding: 12px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;    
+}
+
+.header mat-icon {
+    cursor: pointer;
+}
+
+mat-form-field{
+    width: 100%;
+}
+
+p {
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.drop-zone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    border: 1.7px dashed;
+    color: rgb(105, 113, 221);
+    background-color: rgb(237,240,252);
+    border-radius: 10px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.drop-zone p {
+    margin-top: 7px;
+}
+
+.selected {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: small;
+}
+
+.actions{
+    display: flex;
+    justify-content: flex-end;
+    margin: 15px;
+    gap: 12px;
+}
+

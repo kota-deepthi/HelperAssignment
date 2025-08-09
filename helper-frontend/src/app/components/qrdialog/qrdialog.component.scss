@@ -1,0 +1,68 @@
+.dialog {
+    height: 550px;
+    width: 550px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 14px;
+    margin-bottom: 40px
+}
+
+.orange-div {
+    width: 200px;
+    background-color: rgb(226,128,70);
+    gap: 0px;
+}
+
+.row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.content p {
+    margin: 4px;
+    font-weight: 400;
+    font-size: 12px; 
+}
+
+h3 {
+    color:rgb(58, 1, 119);
+    margin-bottom: 0px;
+}
+
+.profile {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.bottom {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+button {
+    margin-top: 14px;
+    height: 35px;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header mat-icon {
+    cursor: pointer;
+}

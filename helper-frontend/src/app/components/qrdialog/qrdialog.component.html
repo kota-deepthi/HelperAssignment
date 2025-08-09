@@ -1,0 +1,23 @@
+<div class="dialog" #capture>
+    <div class="header"><p>Employee ID</p><mat-icon (click)="close()">close_outlined</mat-icon></div>
+    <mat-divider></mat-divider>
+    <div class="content">
+        <mat-icon class="profile">account_circle_outlined</mat-icon>
+        <h3>{{data.name}}</h3>
+        <p style="color: rgb(0, 0, 204);">{{data.service}}</p>
+        <p style="color: rgb(189, 123, 0)">#{{data.code}}</p>
+        <qrcode [qrdata]="data.code" [width]="100" [errorCorrectionLevel]="'M'"></qrcode>
+        <div class="orange-div">
+            <div class="row"><p>organisation</p>:<p>{{data.organisation}}</p></div>
+            <div class="row"><p>EMP ID</p>:<p>{{data.code}}</p></div>
+            <div class="row"><p>Phone Number</p>:<p>{{data.phone}}</p></div>
+            <div class="row"><p>joined Data</p>:<p>{{formatDateTime(data.doj)}}</p></div>
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="bottom">
+        <button matButton><mat-icon>print_outline</mat-icon>print</button>
+        <button mat-raised-button color="primary"><mat-icon>download</mat-icon>Download</button>
+    </div>
+</div>
+

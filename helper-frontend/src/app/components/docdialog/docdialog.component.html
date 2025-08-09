@@ -1,32 +1,34 @@
-<h2 mat-dialog-title>Select Document Type & Upload</h2>
-
-<mat-form-field appearance="outline">
-  <mat-label>Document Type</mat-label>
-  <mat-select [(ngModel)]="docType">
-    <mat-option *ngFor="let type of docTypes" [value]="type">
-      {{ type }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-
-<div
-  class="drop-zone"
-  (drop)="onDrop($event)"
-  (dragover)="onDragOver($event)"
->
-  <p *ngIf="!selectedFile">Drag & drop your document here or</p>
-  <p *ngIf="selectedFile">Selected: {{ selectedFile.name }}</p>
-  <button mat-button (click)="fileInput.click()">Select File</button>
-  <input
-    type="file"
-    accept="application/pdf"
-    (change)="onFileSelected($event)"
-    hidden
-    #fileInput
-  />
-</div>
-
-<div class="actions">
-  <button mat-button (click)="close()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || !docType">Upload</button>
+<div class="dialog">
+  <div class="header">
+    <h3>Upload KYC Documents</h3>
+    <mat-icon (click)="close()">close_outlined</mat-icon>
+  </div>
+  <mat-divider></mat-divider>
+  <p style="color: gray">Select Document Type</p>
+  <mat-form-field appearance="outline">
+    <mat-select placeholder="Document Type" [(ngModel)]="docType">
+      <mat-option *ngFor="let type of docTypes" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <p>Please ensure both sides of the document are uploaded.</p>
+  <div (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+    <div class="drop-zone" (click)="fileInput.click()">
+        <mat-icon>backup_outlined</mat-icon>
+        <div style="display: flex; gap:5px">
+          <p>Click to Upload</p><p style="color:black"> or drag and drop</p>
+        </div>
+    </div>
+    <input type="file" accept="application/pdf" (change)="onFileSelected($event)" hidden #fileInput/>
+  </div>
+  <div *ngIf="selectedFile" class="selected">
+    <span style="display: flex; align-items: center;"><img src="assets/pdf.png" width="20px" height="20px">"Selected: {{ selectedFile.name }}</span> 
+    <mat-icon (click)="remove()" style="color: red; cursor: pointer;">delete_outlined</mat-icon>
+  </div>
+  <mat-divider style="margin-top: calc(40px-selected)"></mat-divider>
+  <div class="actions">
+    <button mat-raised-button (click)="close()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="upload()">Save</button>
+  </div>
 </div>

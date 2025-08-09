@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AddHelperComponent } from '../components/add-helper/add-helper.component';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { HeaderComponent } from '../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +18,8 @@ import { MatOption, MatOptionModule, MatOptionSelectionChange } from '@angular/m
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { SuccesssdialogComponent } from '../components/successsdialog/successsdialog.component';
+import { QrdialogComponent } from '../components/qrdialog/qrdialog.component';
+import { DocdialogComponent } from '../components/docdialog/docdialog.component';
 
 interface Helper {
     _id: string,
@@ -45,7 +47,7 @@ interface Helper {
   standalone: true,
   imports: [RouterLink, AddHelperComponent, RouterOutlet, HeaderComponent, MatIconModule, MatButtonModule, NgIf, NgFor, MatDivider,
     DeleteDialogComponent, MatMenuModule, ReactiveFormsModule, MatFormField, MatSelectModule, MatOption, MatFormFieldModule, MatInputModule, MatOptionModule,
-    MatCheckbox
+    MatCheckbox, CommonModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -100,6 +102,7 @@ export class HomeComponent implements OnInit {
       next: (helpers)=>{
         this.Helpers = helpers;
         this.filteredHelpers = helpers;
+        this.selectedHelper = helpers[0]
         console.log(this.Helpers);
       },
       error: (err) =>{
@@ -111,6 +114,7 @@ export class HomeComponent implements OnInit {
   setUpSearch(): void {this.searchField.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe((search)=>{
     if(search==''){
       this.filteredHelpers = this.Helpers;
+      this.selectedHelper = this.Helpers[0]
     }else{
       this.searchHelpers(search);
     }
@@ -123,6 +127,7 @@ export class HomeComponent implements OnInit {
       next: (helpers) => {
         console.log(helpers)
         this.filteredHelpers = helpers;
+        this.selectedHelper = this.filteredHelpers[0]
       },
       error: (err) => {
         console.log('Search error:', err);
@@ -134,6 +139,7 @@ export class HomeComponent implements OnInit {
     this.helperService.filterHelper({service: this.serviceFilter.value??[], organisation: this.organisationFilter.value??[]}).subscribe({
       next: (helpers)=> {
         this.filteredHelpers = helpers;
+        this.selectedHelper = this.filteredHelpers[0]
       },
       error: (err)=>{
         console.log("something went worng while filtering", err)
@@ -187,7 +193,7 @@ export class HomeComponent implements OnInit {
 
   openDeleteDialog(): void {
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: {name: this.selectedHelper?.fullName}
+      data: {name: this.selectedHelper?.fullName, service: this.selectedHelper?.serviceType}
     });
 
     dialogRef.afterClosed().subscribe(res=>{
