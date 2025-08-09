@@ -38,11 +38,18 @@ export class Helper{
     @Prop()
     vehicleType? : string
 
+    @Prop()
+    vehicleNumber?: string
+
     @Prop({required: true})
     docType: string
 
     @Prop({required: true})
     kycDocUrl: string
+
+
+    @Prop()
+    additionalDocType: string
 
     @Prop()
     additionalDoc? : string

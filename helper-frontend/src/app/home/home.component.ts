@@ -17,6 +17,7 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatOption, MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { SuccesssdialogComponent } from '../components/successsdialog/successsdialog.component';
 
 interface Helper {
     _id: string,
@@ -68,8 +69,33 @@ export class HomeComponent implements OnInit {
   filteredHelpers: any
   serviceFilter = new FormControl<string[]>([])
   organisationFilter = new FormControl<string[]>([])
+  serviceSearch = new FormControl('')
+  orgSearch = new FormControl('')
+  filteredServiceOptions: string[] =[]
+  filteredOrgOptions: string[] = []
     
   ngOnInit(): void {
+    this.fetchHelpers()
+    this.setUpSearch()   
+    this.filteredServiceOptions = [...this.typeofserviceoptions]
+    this.filteredOrgOptions = [...this.organisationoptions] 
+    this.serviceSearch.valueChanges.subscribe(value=>{
+      if(!value){
+        this.filteredServiceOptions = [...this.typeofserviceoptions]
+      }else{
+        this.filteredServiceOptions = this.typeofserviceoptions.filter(service=> service.toLowerCase().includes(value.toLowerCase()))
+      }
+    })
+    this.orgSearch.valueChanges.subscribe(value=>{
+      if(!value){
+        this.filteredOrgOptions = [...this.organisationoptions]
+      }else{
+        this.filteredOrgOptions = this.organisationoptions.filter(org=> org.toLowerCase().includes(value.toLowerCase()))
+      }
+    })
+  }
+
+  fetchHelpers(): void{
     this.helperService.getHelper().subscribe({
       next: (helpers)=>{
         this.Helpers = helpers;
@@ -80,8 +106,6 @@ export class HomeComponent implements OnInit {
         console.log("Something went wrong while fetching the data...")
       }
     });
-
-    this.setUpSearch()    
   }
 
   setUpSearch(): void {this.searchField.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe((search)=>{
@@ -117,8 +141,12 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  onSelectionChange(event: MatSelectChange){
-    this.serviceFilter.patchValue(event.value)
+  onSelectionChange(event: MatSelectChange, filter: string){
+    if(filter==='service'){
+      this.serviceFilter.patchValue(event.value)
+    }else{
+      this.organisationFilter.patchValue(event.value)
+    }
   }
 
   isAllSelected(filter: FormControl): boolean{
@@ -167,7 +195,7 @@ export class HomeComponent implements OnInit {
         if (!this.selectedHelper || !this.selectedHelper._id) return;
         this.helperService.deleteHelper(this.selectedHelper._id).subscribe({
           next:()=>{
-            this.Helpers = this.Helpers.filter(h=>h !== this.selectedHelper);
+            this.fetchHelpers()
             this.selectedHelper = null;
           },
           error:(err)=>{
@@ -194,6 +222,11 @@ export class HomeComponent implements OnInit {
   getInitial(name: string): string{
     const splitchars= name.split('');
     return (splitchars[0] + splitchars[1]).toUpperCase();
+  }
+
+  resetFilters(){
+    this.serviceFilter.setValue([])
+    this.organisationFilter.setValue([])
   }
 
 }

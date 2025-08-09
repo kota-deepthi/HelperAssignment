@@ -87,3 +87,27 @@ header {
 ::ng-deep .success {
   color: green
 }
+
+.profilePicPresent {
+ width: 100px;
+  height: 100px;
+  background-color: rgb(253, 253, 253);
+  border: 2px dashed blue;     
+  border-radius: 80px;
+  filter:  brightness(0.8);
+}
+
+.pdf-preview{
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(242, 243, 247);
+  border-radius: 8px;
+  padding: 20px;
+  justify-content: center;
+  gap: 0px;
+}
+
+mat-form-field{
+  width: 100%;
+}

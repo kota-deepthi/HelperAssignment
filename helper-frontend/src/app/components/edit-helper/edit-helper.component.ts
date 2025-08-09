@@ -8,13 +8,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CountryCodeService } from '../../services/country-code.service';
 import { MatDivider } from '@angular/material/divider';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { HelperService } from '../../services/helper.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Observable } from 'rxjs'; 
 import { map } from 'rxjs/operators'; 
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { DocdialogComponent } from '../docdialog/docdialog.component';
 
 interface Helper {
     _id: string,
@@ -43,7 +45,7 @@ interface Helper {
   imports: [
     MatIconModule, NgIf, ReactiveFormsModule, FormsModule,
     MatFormFieldModule, MatOption, MatSelectModule, MatRadioButton, MatRadioGroup, MatDivider, NgFor,
-    MatInputModule, MatButtonModule
+    MatInputModule, MatButtonModule, CommonModule
   ],
   templateUrl: './edit-helper.component.html',
   styleUrl: './edit-helper.component.scss'
@@ -65,13 +67,16 @@ export class EditHelperComponent implements OnInit {
 
   selectedFile: any = null;
   readonly MAX_MB = 5;
+  previewPdf: File | null = null
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private countryCodeService: CountryCodeService,
     private formBuilder: FormBuilder,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private dialog: MatDialog,
+    
   ) {}
 
   ngOnInit(): void {
@@ -129,12 +134,28 @@ export class EditHelperComponent implements OnInit {
             });
 
             this.DOJ = this.recievedHelper.DOJ;
+            this.loadPdf("http://localhost:3000/uploads/"+this.recievedHelper.kycDocUrl)
         },
         error: (err) => {
             console.error('Error fetching the helper', err);
         }
     });
   }
+
+  openDocUpload(){
+      const dialogRef = this.dialog.open(DocdialogComponent);
+  
+      dialogRef.afterClosed().subscribe(res=>{
+        if(res){
+          console.log(res);
+          this.firstFormGroup.patchValue({
+            docType: res.docType,
+            KYCDoc: res.file
+          });
+          this.previewPdf = res.file
+        }
+      })
+    }
 
   goBackToHome() {
     this.router.navigate(['/']);
@@ -201,6 +222,13 @@ export class EditHelperComponent implements OnInit {
     this.firstFormGroup.get('profilepic')?.markAsDirty();
   }
 
+  loadPdf(url: string){
+    this.helperService.getPdf(url).subscribe((File)=>{
+      this.previewPdf = File
+      console.log(this.previewPdf)
+    })
+  }
+
   submit(){
     if (this.firstFormGroup.invalid) {
       this._snackbar.open("Please fill all required fields", 'ok', { duration: 3000, verticalPosition:'bottom', horizontalPosition:'right' });
@@ -219,9 +247,12 @@ export class EditHelperComponent implements OnInit {
     if (first.email) formData.append('email', first.email);
     formData.append('docType', first.docType?? '');
 
-    if (first.vehicleType && first.vehicleType !== 'None') {
+    if (first.vehicleType && first.vehicleType.value !== 'None') {
       formData.append('vehicleType', first.vehicleType);
       if (first.vehicleNumber) formData.append('vehicleNumber', first.vehicleNumber);
+    }else if(first.vehicleType.value ==="None"){
+      formData.append('vehicleType', 'none');
+      formData.append('vehicleNumber', '')
     }
 
     if (Array.isArray(first.languages)) {
@@ -246,11 +277,20 @@ export class EditHelperComponent implements OnInit {
       next: (res) => {
         this._snackbar.open("Changes saved", 'ok', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right', panelClass:['success'] });
         console.log("Form edited successfully");
+        this.router.navigate(['/'])
       },
       error: (err) => {
         this._snackbar.open("Something went wrong", 'ok', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right' , panelClass:['error']});
         console.error("Error:", err);
       }
     });
+  }
+  getPDFName(name: string){
+    const splited = name.split('-').slice(1)
+    return splited.join("-")
+  }
+
+  isMarkedAsTouched(){
+    return this.firstFormGroup.get('KYCDoc')?.touched || !this.firstFormGroup.get('KYCDoc')
   }
 }

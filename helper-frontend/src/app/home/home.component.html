@@ -8,8 +8,8 @@
         </button>
         <mat-menu #sortMenu="matMenu">
           sort by
-        <button mat-menu-item (click)="sortHelper('name')">Helpers Name(A-Z)</button>
-        <button mat-menu-item (click)="sortHelper('code')">Employee ID</button>
+        <button mat-menu-item (click)="sortHelper('name')"  (click)="$event.stopPropagation()">Helpers Name(A-Z)</button>
+        <button mat-menu-item (click)="sortHelper('code')" (click)="$event.stopPropagation()">Employee ID</button>
       </mat-menu>
       </div>
       <div>
@@ -18,10 +18,17 @@
         </button>
         <mat-menu #filterMenu="matMenu">
           Filter By
-          <div mat-menu-item (click)="$event.stopPropagation()">
-            <label>Service</label><br>
+          <div style="padding: 12px;">
+            <div mat-menu-item (click)="$event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between;">
+              <label>Service</label>
+              <span style="color: rgb(111,115,189)" *ngIf="serviceFilter.value?.length || 0 > 0" (click)="serviceFilter.setValue([])">reset</span>
+            </div>
             <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
-              <mat-select [formControl]="serviceFilter" placeholder="Select Service" multiple (selectionChange)="onSelectionChange($event)">
+              <mat-select [formControl]="serviceFilter" placeholder="Select Service" multiple (selectionChange)="onSelectionChange($event, 'service')">
+                <div>
+                  <input matInput placeholder="🔎 search" [formControl]="serviceSearch">
+                </div>
                 <mat-checkbox
                 class="mat-option-pseudo-checkbox"
                 [checked]="isAllSelected(serviceFilter)"
@@ -33,7 +40,7 @@
                 {{serviceFilter?.value?.length}} / {{typeofserviceoptions.length}}
                 </mat-checkbox>
 
-                <mat-option *ngFor="let service of typeofserviceoptions" [value]="service">
+                <mat-option *ngFor="let service of filteredServiceOptions" [value]="service">
                   {{service}}
                 </mat-option>
 
@@ -49,9 +56,15 @@
             </mat-form-field>
           </div>
           <div mat-menu-item (click)="$event.stopPropagation()">
-            <label>Organisation</label><br>
+            <div style="display: flex; justify-content: space-between;">
+            <label>Organisation</label>
+              <span style="color: rgb(111,115,189)" *ngIf="organisationFilter.value?.length || 0 > 0" (click)="organisationFilter.setValue([])">Reset</span>
+            </div>
             <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
-              <mat-select [formControl]="organisationFilter" placeholder="Select Organisation" multiple (selectionChange)="onSelectionChange($event)">
+              <mat-select [formControl]="organisationFilter" placeholder="Select Organisation" multiple (selectionChange)="onSelectionChange($event, 'org')">
+                <div>
+                  <input matInput placeholder="🔎 search" [formControl]="orgSearch">
+                </div>
                 <mat-checkbox
                 class="mat-option-pseudo-checkbox"
                 [checked]="isAllSelected(organisationFilter)"
@@ -63,7 +76,7 @@
                 {{organisationFilter?.value?.length}} / {{organisationoptions.length}}
                 </mat-checkbox>
 
-                <mat-option *ngFor="let org of organisationoptions" [value]="org">
+                <mat-option *ngFor="let org of filteredOrgOptions" [value]="org">
                   {{org}}
                 </mat-option>
 
@@ -79,25 +92,32 @@
             </mat-form-field>
           </div>
           <mat-divider></mat-divider>
-          <button mat-raised-button colot="primary" (click)="applyFilters()">Apply</button>
+          <div class="filter-buttons">
+            <p style="display: flex;" (click)="resetFilters()" (click)="$event.stopPropagation()"><mat-icon>replay_outlined</mat-icon> Reset</p>
+            <button mat-raised-button color="primary" (click)="applyFilters()">Apply</button>
+          </div>
+        </div>  
         </mat-menu>
       </div>
       <div>
         <button mat-raised-button>
-        <mat-icon>calander_today</mat-icon>
-      </button>
+          <mat-icon>calendar_today</mat-icon>      
+        </button>
       </div>
       <div>
-        <input type="text" [formControl]="searchField" placeholder="Name, Employee ID, Phone" class="search-input" >
+        <input type="text" [formControl]="searchField" placeholder="🔎 Name, Employee ID, Phone" class="search-input" >
       </div>
-       <div *ngIf="searchField.value===''">
-        {{Helpers.length}} Helpers
+       <div *ngIf="searchField.value==='' && (serviceFilter.value?.length || 0)===0 && (organisationFilter?.value?.length || 0)===0 && filteredHelpers?.length || 0 === Helpers?.length || 0">
+        {{Helpers.length || 0}} Helpers
        </div>
-       <div *ngIf="searchField.value!==''">
-        {{filteredHelpers.length}} of {{Helpers.length}} results
+       <div *ngIf="searchField.value!=='' || (serviceFilter.value?.length || 0)>0 || (organisationFilter?.value?.length || 0)>0">
+        {{filteredHelpers.length || 0}} of {{Helpers.length || 0}} results
        </div>
     </div>
     <div>
+      <button mat-raised-button>
+        <mat-icon>file_download_outlined</mat-icon>
+      </button>
       <button mat-raised-button color="primary" [routerLink]="['/add-helper']">+Add-Helper</button>
     </div>
   </nav>
@@ -136,7 +156,7 @@
               {{getInitial(selectedHelper.fullName)}}
             </div>
             <div class="content-helper-name">
-              <h2>{{ selectedHelper.fullName }}</h2>
+              <h2 style="margin: 0px;">{{ selectedHelper.fullName }}</h2>
               {{ selectedHelper.serviceType }}
             </div>
           </div>
@@ -149,23 +169,54 @@
               </button>
           </div>
         </div>
-        <strong>Employee ID</strong> <mat-divider></mat-divider>
-        <p><strong>Identification Card:</strong> {{ selectedHelper.employeeIDurl }}</p>
-        <p><strong>Employee code:</strong> {{ selectedHelper.employeeCode }}</p>
-        <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
-        <p><strong>Gender:</strong> {{ selectedHelper.gender }}</p>
-        <p><strong>Language(s):</strong> {{ selectedHelper.language.join(', ') }}</p>
-        <p><strong>Mobile No:</strong> {{ selectedHelper.countryCode }}{{selectedHelper.phoneNumber}}</p>
-        <p><strong>Email:</strong> {{ selectedHelper.email}}</p>
-        <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl">View</a></p>
-        <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
-        <p><strong>Type:</strong> {{ selectedHelper.serviceType }}</p>
-        <p><strong>Organisation:</strong> {{ selectedHelper.organisationName }}</p>
-        <p><strong>Date:</strong> {{ formatDateTime(selectedHelper.DOJ) }}</p>
-
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+            Employee ID
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content"><p>Identification Card:</p>{{ selectedHelper.employeeIDurl }}</div>
+          <div class="display-content"><p>Employee code:</p> {{ selectedHelper.employeeCode }}</div>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+            Personal Details
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content"><p>Gender:</p> {{ selectedHelper.gender }}</div>
+          <div class="display-content"><p>Language(s):</p> {{ selectedHelper.language.join(', ') }}</div>
+          <div class="display-content"><p>Mobile No:</p> {{ selectedHelper.countryCode }}{{selectedHelper.phoneNumber}}</div>
+          <div class="display-content"><p>Email:</p> {{ selectedHelper.email || '-'}}</div>
+        </div>
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl" style="display: flex; align-items: center;">
+          <mat-icon>visibility</mat-icon>  View
+          </a>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+            SERVICE DETAILS
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content"><p>Type:</p> {{ selectedHelper.serviceType }}</div>
+          <div class="display-content"><p>Organisation:</p> {{ selectedHelper.organisationName }}</div>
+          <div class="display-content"><p>Date:</p> {{ formatDateTime(selectedHelper.DOJ) }}</div>
+        </div>
       </div>
 
-      <div class="profile-section" *ngIf="!selectedHelper && Helpers.length>0">
+      <div class="profile-section" *ngIf="!selectedHelper && filteredHelpers?.length||0>0">
         <div class="helper-profile">
           <div class="image-name-type">
             <div *ngIf="Helpers[0]?.profilePicUrl">
@@ -179,7 +230,7 @@
               {{getInitial(Helpers[0].fullName)}}
             </div>
             <div class="content-helper-name">
-              <h2>{{Helpers[0].fullName }}</h2>
+              <h2 style="margin: 0px;">{{Helpers[0].fullName }}</h2>
               {{ Helpers[0].serviceType }}
             </div>
           </div>
@@ -192,21 +243,59 @@
               </button>
           </div>
         </div>
-        <strong>Employee ID</strong> <mat-divider></mat-divider>
-        <p><strong>Identification Card:</strong> {{ Helpers[0].employeeIDurl }}</p>
-        <p><strong>Employee code:</strong> {{ Helpers[0].employeeCode }}</p>
-        <strong>PERSONAL DETAILS</strong> <mat-divider></mat-divider>
-        <p><strong>Gender:</strong> {{ Helpers[0].gender }}</p>
-        <p><strong>Language(s):</strong> {{ Helpers[0].language.join(', ') }}</p>
-        <p><strong>Mobile No:</strong> {{ Helpers[0].countryCode }} {{Helpers[0].phoneNumber}}</p>
-        <p><strong>Email:</strong> {{ Helpers[0].email}}</p>
-        <p><strong>KYC Document:</strong> <a [href]="'http://localhost:3000/uploads/' + Helpers[0].kycDocUrl">View</a></p>
-        <strong>SERVICE DETAILS</strong> <mat-divider></mat-divider>
-        <p><strong>Type:</strong> {{ Helpers[0].serviceType }}</p>
-        <p><strong>Organisation:</strong> {{ Helpers[0].organisationName }}</p>
-        <p><strong>Date:</strong> {{ formatDateTime(Helpers[0].DOJ) }}</p>
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+            Employee ID
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content">
+            <p>Identification Card:</p> {{ Helpers[0].employeeIDurl }}
+          </div>
+          <div class="display-content">
+            <p>Employee code:</p> {{ Helpers[0].employeeCode }}
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+            PERSONAL DETAILS
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content"><p>Gender:</p> {{ Helpers[0].gender }}</div>
+          <div class="display-content"><p>Language(s):</p> {{ Helpers[0].language.join(', ') }}</div>
+          <div class="display-content"><p>Mobile No:</p>{{ Helpers[0].countryCode }} {{Helpers[0].phoneNumber}}</div>
+          <div class="display-content"><p>Email:</p> {{ Helpers[0].email || '-'}}</div>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + Helpers[0].kycDocUrl" style="display: flex; align-items: center;">
+              <mat-icon>remove_red_eye_outlined</mat-icon>  View
+            </a>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <span style="color: rgb(154,156,163); font-weight: 500;">
+           SERVICE DETAILS
+          </span>
+          <span style="flex-grow: 1; margin-left: 10px;">
+            <mat-divider></mat-divider>
+          </span>
+        </div>
+        <div class="content-block">
+          <div class="display-content"><p>Type:</p> {{ Helpers[0].serviceType }}</div>
+          <div class="display-content"><p>Organisation:</p> {{ Helpers[0].organisationName }}</div>
+          <div class="display-content"><p>Date:</p> {{ formatDateTime(Helpers[0].DOJ) }}</div>
+        </div>
+        
       </div>
-      <div *ngIf="!selectedHelper && Helpers.length===0">
+      <div *ngIf="!selectedHelper && filteredHelpers?.length===0">
         No Helpers found
       </div>
     </div>
@@ -214,3 +303,4 @@
 </div>
 
 <router-outlet></router-outlet>
+ 

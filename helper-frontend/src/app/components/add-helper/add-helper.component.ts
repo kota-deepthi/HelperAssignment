@@ -1,11 +1,11 @@
 import { Component, computed, inject, NgModule, OnInit, signal } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators,FormsModule, FormControl} from '@angular/forms';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, CommonModule } from '@angular/common';
 import { MatSelectModule} from '@angular/material/select'
 import {MatCheckboxModule} from '@angular/material/checkbox'
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core'
@@ -19,6 +19,7 @@ import {MatSnackBar} from '@angular/material/snack-bar'
 import { HelperService } from '../../services/helper.service';
 import { Router, RouterLink } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
+import { SuccesssdialogComponent } from '../successsdialog/successsdialog.component';
 @Component({
   selector: 'app-add-helper',
   standalone: true,
@@ -38,7 +39,8 @@ import { HomeComponent } from '../../home/home.component';
     MatRadioModule,
     DocdialogComponent,
     RouterLink,
-    HomeComponent
+    HomeComponent,
+    CommonModule,
   ],
   templateUrl: './add-helper.component.html',
   styleUrl: './add-helper.component.scss'
@@ -52,6 +54,14 @@ export class AddHelperComponent implements OnInit {
   languagesoptions: string[]= ["English", "Telugu", "Hindi", "Kannnada", "Tamil", "Marati"]
   vehicleType= ['None', "Auto", "Bike", "car"]
   countryCode : {name: string; dial_code: string; code: string}[] = [];
+  kycPdf: File | null = null;
+  additionalPdf: File | null = null;
+  profilepicURL: string | null = null;
+  kycUrl: string | null = null;
+  additionalurl: string | null = null;
+  serviceSearch = new FormControl('')
+  filteredService: string[] = [];
+
 
   constructor(
     private countryCodeService: CountryCodeService, 
@@ -62,18 +72,42 @@ export class AddHelperComponent implements OnInit {
 
   ngOnInit(): void {
     this.countryCode = this.countryCodeService.getCountryCode();
+    this.filteredService = [...this.typeofserviceoptions]
+    this.serviceSearch.valueChanges.subscribe(value=>{
+      this.filterLanguages(value);
+    })
+  }
+
+  filterLanguages(value: string | null){
+    if(!value){
+      this.filteredService = [...this.typeofserviceoptions]
+    }else{
+      this.filteredService = this.typeofserviceoptions.filter(service=> service.toLowerCase().includes(value.toLowerCase()))
+    }
   }
   
-  openDocUpload(){
+  openDocUpload(field: string){
     const dialogRef = this.dialog.open(DocdialogComponent);
 
     dialogRef.afterClosed().subscribe(res=>{
       if(res){
         console.log(res);
-        this.firstFormGroup.patchValue({
-          docType: res.docType,
-          KYCDoc: res.file
-        });
+        if(field==="KYC"){
+          this.firstFormGroup.patchValue({
+            docType: res.docType,
+            KYCDoc: res.file
+          });
+          this.kycPdf = res.file
+          this.kycUrl = URL.createObjectURL(res.file);
+        }
+        else{
+          this.secondFormGroup.patchValue({
+            additionalDocType: res.docType,
+            additionalDocs: res.file
+          })
+          this.additionalPdf = res.file
+          this.additionalurl = URL.createObjectURL(res.file)
+        }
       }
     })
   }
@@ -129,6 +163,8 @@ export class AddHelperComponent implements OnInit {
     }
     this.firstFormGroup.controls.profilepic.setValue(this.selectedFile);
     this.firstFormGroup.controls.profilepic.markAsDirty();
+    this.profilepicURL = URL.createObjectURL(this.selectedFile)
+    
   }
 
   firstFormGroup = this.formBuilder.group({
@@ -148,6 +184,7 @@ export class AddHelperComponent implements OnInit {
   });
 
   secondFormGroup = this.formBuilder.group({
+    additionalDocType: [''],
     additionalDocs: [],
   });
 
@@ -160,6 +197,7 @@ export class AddHelperComponent implements OnInit {
     this._snackBar.open("Please fill all required fields", 'ok', { duration: 3000 });
     return;
   }
+
   const formData = new FormData();
   const first = this.firstFormGroup.value;
   const second = this.secondFormGroup.value;
@@ -198,8 +236,12 @@ export class AddHelperComponent implements OnInit {
 
   this.helperService.addHelper(formData).subscribe({
     next: (res) => {
-      this._snackBar.open("Helper added successfully", 'ok', { duration: 3000 , verticalPosition:'bottom', horizontalPosition:'right', panelClass:['success']});
-      console.log("Form submitted successfully");
+      const successdialog = this.dialog.open(SuccesssdialogComponent, {data : {name: first.fullName}});
+      console.log("Form submitted successfully")
+      setTimeout(()=>{
+        successdialog.close()
+        this.router.navigate(['/'])
+      }, 2000)
     },
     error: (err) => {
       this._snackBar.open("Submission failed", 'ok', { duration: 3000 , verticalPosition:'bottom', horizontalPosition:'right', panelClass:['error']});
@@ -208,8 +250,39 @@ export class AddHelperComponent implements OnInit {
   });
 }
 
-goBackToHome(){
-  this.router.navigate(['/'])
-}
+  goBackToHome(){
+    this.router.navigate(['/'])
+  }
+  getPDFName(name: string){
+    const splited = name.split('-').slice(1)
+    const filename =  splited.join("-")
+    if(filename.length > 10){
+      return filename.substring(0,10)+"..."
+    }else{
+      return filename
+    }
+  }
+
+  getInitial(name: string | null | undefined): string{
+    if(!name) return ''
+    const splitchars= name.split('');
+    return (splitchars[0] + splitchars[1]).toUpperCase();
+  }
+
+  goNext(stepper : MatStepper){
+    // if(this.firstFormGroup.valid){
+    //   this.selectedIndex = 1
+    // }else{
+    //   this.firstFormGroup.markAllAsTouched()
+    // }
+    this.selectedIndex = 1
+  }
+
+  isMarkedAsTouched(){
+    return this.firstFormGroup.get('KYCDoc')?.touched || !this.firstFormGroup.get('KYCDoc')
+  }
+
+
+
 
 }

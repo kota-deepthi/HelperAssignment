@@ -44,6 +44,9 @@ export class CreateHelperDto {
   @IsNotEmpty()
   docType: string;
 
+  @IsOptional()
+  @IsString()
+  additionalDocType?: string
 
   @IsOptional()
   @Type(() => Date)

@@ -24,9 +24,10 @@
   width: 300px;
   border-right: 1px solid #ccc;
   overflow-y: auto;
-  background-color: #f5f5f5;
-  margin: 5px;
-  border-radius: 5px;
+  background-color: rgb(254,254,254);
+  margin: 8px;
+  border: 1px solid rgb(242,242,242);
+  border-radius: 8px;
 }
 
 .helper-item {
@@ -35,6 +36,7 @@
   padding: 12px;
   cursor: pointer;
   transition: background-color 0.2s;
+  border-bottom: 1px solid rgb(242,242,242);
 }
 
 .helper-item:hover {
@@ -67,16 +69,17 @@
 .content {
   flex: 1;
   padding: 20px;
-  background-color: #f5f5f5;
-  margin: 5px;
-  border-radius: 5px;
+  background-color: rgb(251,251,251);
+  margin: 8px;
+  border-radius: 8px;
 }
    
 .helper-profile{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin: 5px;
+  margin: 10px;
+  margin-bottom: 40px;
 }
 
 .content-helper-name{
@@ -87,6 +90,8 @@
 .image-name-type{
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .non-profile-pic {
@@ -97,6 +102,7 @@
   align-items: center;
   background-color: rgb(210, 207, 207);
   justify-content: center;
+  margin-right: 12px;
   
 }
 
@@ -104,4 +110,40 @@
   box-sizing: border-box;
   padding: 9px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1)
+}
+
+.edit-delete-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.filter-buttons {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-top: 5px;
+  
+}
+
+p {
+  display: flex;
+  align-items: flex-start;
+  color: gray;
+  width: 250px;
+}
+
+.display-content {
+  display: flex; 
+  align-items: center;
+  margin: 0px;
+}
+
+.content-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  margin: 8px;
 }

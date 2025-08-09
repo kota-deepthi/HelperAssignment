@@ -19,7 +19,7 @@
   <button mat-button (click)="fileInput.click()">Select File</button>
   <input
     type="file"
-    accept=".pdf,.jpg,.jpeg,.png"
+    accept="application/pdf"
     (change)="onFileSelected($event)"
     hidden
     #fileInput

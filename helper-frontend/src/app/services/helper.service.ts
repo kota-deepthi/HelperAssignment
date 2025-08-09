@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 
 @Injectable({
@@ -31,11 +31,22 @@ export class HelperService {
   }
 
   searchHelper(search: string){
-    return this.http.get(`http://localhost:3000/helper/searchBy/${search}`)
+    return this.http.get(`http://localhost:3000/helper/searchBy/${encodeURIComponent(search)}`)
   }
 
   filterHelper(filter: {service: string[], organisation: string[]}){
     return this.http.post(`http://localhost:3000/helper/filter`, filter)
   }
+
+  getPdf(url: string){
+    return this.http.get(url, {responseType: 'blob'}).pipe(
+      map((blob: Blob)=>{
+        const filename = url.split('/').pop() || 'Document.pdf'
+        return new File([blob], filename, {type: blob.type})
+      })
+    )
+  }
+
+  
 
 }

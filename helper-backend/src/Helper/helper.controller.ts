@@ -106,11 +106,7 @@ export class HelperController {
       ...helper.toObject(),
     };
 
-    const validationPipe = new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      skipMissingProperties: true,
-    });
+    const validationPipe = new ValidationPipe();
 
     try {
       const validatedBody = await validationPipe.transform(body, {
@@ -151,6 +147,7 @@ export class HelperController {
 
   @Get('/searchBy/:search')
   async searchHelpers(@Param('search') search: string){
+    search = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const searchbyName = await this.helperService.getHelperByName(search);
     const searchbyID = await this.helperService.getHelperByEmpID(search);
     const searchbyPhone = await this.helperService.getHelperByPhone(search);

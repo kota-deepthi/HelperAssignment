@@ -14,10 +14,15 @@
 
   <div class="right">
     <form *ngIf="selectedIndex === 1" [formGroup]="firstFormGroup">
-      <div>
+      <div *ngIf="!firstFormGroup.get('profilepic')">
         <img src="assets/UploadImage.png" (click)="fileInput.click()" class="upload-image">
         <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jpeg,image/png">
         <span class="selected-file">{{ selectedFile?.name }}</span>
+      </div>
+      <div *ngIf="firstFormGroup.get('profilepic')?.value">
+        <img [src]="'http://localhost:3000/uploads/'+firstFormGroup.get('profilepic')?.value" (click)="fileInput.click()" class="profilePicPresent">
+        <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jpeg,image/png">
+        <span class="selected-file">{{selectedFile?.name}}</span>
       </div>
 
       <div class="hint">
@@ -35,6 +40,7 @@
               {{service}}
             </mat-option>
           </mat-select>
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
       </div>
 
@@ -48,6 +54,7 @@
               {{ org }}
             </mat-option>
           </mat-select>
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
       </div>
 
@@ -57,6 +64,7 @@
         <label>Full Name*</label><br>
         <mat-form-field appearance="outline">
           <input matInput placeholder="Full Name" formControlName="fullName">
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
       </div>
 
@@ -92,6 +100,7 @@
               </span>
             </mat-select-trigger>
           </mat-select>
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
       </div>
 
@@ -107,10 +116,9 @@
 
       </div>
       <br>
-
-      <div>
-        <label>Phone*</label><br>
-        <mat-form-field appearance="outline">
+      <label>Phone*</label><br>
+      <div style="display: flex; gap: 2px;">
+        <mat-form-field style="width: 80px;" appearance="outline">
           <mat-select formControlName="contryCode">
             <mat-select-trigger>
               {{firstFormGroup.get('contryCode')?.value}}
@@ -120,6 +128,7 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <input matInput placeholder="Phone Number" formControlName="phoneNumber" >
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
        </div>
 
@@ -129,6 +138,7 @@
         <label>Email</label><br>
         <mat-form-field appearance="outline">
           <input matInput placeholder="example@abc.com" formControlName="email">
+          <mat-error>Enter valid Email</mat-error>
         </mat-form-field>
       </div>
 
@@ -150,16 +160,23 @@
       <div *ngIf="showVehicleNumber">
         <label>Vehicle Number*</label><br>
         <mat-form-field appearance="outline">
-          <input matInput placeholder="TG01AB1234" formControlName="vehicleNumber" required>
+          <input matInput formControlName="vehicleNumber" required>
+          <mat-error>This field is Mandatory</mat-error>
         </mat-form-field>
       </div>
 
       <br>
 
       <div>
-        <p><strong>KYC Document:</strong><br>
-          <a [href]="'http://localhost:3000/uploads/' + recievedHelper?.kycDocUrl" target="_blank">View</a>
-        </p>
+        <strong>KYC Document:</strong><br>
+           <div *ngIf="previewPdf" class="pdf-preview" (click)="openDocUpload()">
+              <img src="assets/pdf.png" width="35px">
+              <p style="margin-bottom: 5px; display: flex; ">{{ getPDFName(previewPdf.name) }} <mat-icon>loop</mat-icon></p> 
+              <p style="color: gray; margin: 0px;">{{ previewPdf.size / (1024*1000) | number: '1.2-2' }}MB</p>
+            </div>
+            <div *ngIf="!previewPdf" mat-raised-button (click)="openDocUpload()" class="docUpload">+</div>
+            <p *ngIf="!previewPdf && isMarkedAsTouched()" style="color: red; font-size: 12px; margin-top: 0px;">This field is Mandatory</p>
+
       </div>
       <button (click)="submit()">Save</button>
     </form>
