@@ -1,4 +1,4 @@
-import { Component, computed, inject, NgModule, OnInit, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, NgModule, OnInit, signal, ViewChild, viewChild } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators,FormsModule, FormControl} from '@angular/forms';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +21,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
 import { SuccesssdialogComponent } from '../successsdialog/successsdialog.component';
 import { QrdialogComponent } from '../qrdialog/qrdialog.component';
+
 @Component({
   selector: 'app-add-helper',
   standalone: true,
@@ -49,7 +50,6 @@ import { QrdialogComponent } from '../qrdialog/qrdialog.component';
 
 export class AddHelperComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
-
   typeofserviceoptions= ['cook', 'nurse', 'driver', 'maid']
   organisationoptions=['ASBL', 'Spring helpers']
   languagesoptions: string[]= ["English", "Telugu", "Hindi", "Kannnada", "Tamil", "Marati"]
@@ -198,9 +198,6 @@ export class AddHelperComponent implements OnInit {
     this._snackBar.open("Please fill all required fields", 'ok', { duration: 3000 });
     return;
   }
-
-  
-
   const formData = new FormData();
   const first = this.firstFormGroup.value;
   const second = this.secondFormGroup.value;
@@ -245,7 +242,7 @@ export class AddHelperComponent implements OnInit {
         successdialog.close()
       }, 2000)
       successdialog.afterClosed().subscribe(()=>{
-        const idDialog = this.dialog.open(QrdialogComponent, {data: {code: res.employeeCode, name:res.fullName, organisation:res.organisationName, service: res.typeOfService, doj:res.doj, phone:res.phoneNumber}})
+        const idDialog = this.dialog.open(QrdialogComponent, {data: {code: res.employeeCode.toString(), name:res.fullName, organisation:res.organisationName, service: res.serviceType, doj:res.DOJ, phone:res.phoneNumber}})
         idDialog.afterClosed().subscribe(()=>{
           this.router.navigate(['/'])
         })
@@ -290,8 +287,4 @@ export class AddHelperComponent implements OnInit {
   isMarkedAsTouched(){
     return this.firstFormGroup.get('KYCDoc')?.touched || !this.firstFormGroup.get('KYCDoc')
   }
-
-
-
-
 }

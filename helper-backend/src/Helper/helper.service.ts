@@ -12,7 +12,6 @@ export class HelperService{
     ){}
 
     async createHelper(CreateHelperDto: CreateHelperDto){
-
         const counter = await this.counterModel.findOneAndUpdate({name:'employeeCode'}, {$inc: {value:1}}, {new: true, upsert: true})
         const employeeCode = 10000+ counter.value
         const employeeIDurl = employeeCode.toString() 
@@ -36,32 +35,34 @@ export class HelperService{
         return this.helperModel.findByIdAndDelete(id);
     }
 
-    getHelperByName(search: string){
-        return this.helperModel.find({fullName: {$regex: search, $options: 'i'}})
-    }
-
-    getHelperByPhone(search: string){
-        return this.helperModel.find({phoneNumber: {$regex: search, $options: 'i'}})
-    }
-
-    getHelperByEmpID(search: string){
-        return this.helperModel.find({$expr:{
-            $regexMatch : {
-                input : {$toString: '$employeeCode'},
-                regex: search
+    async searchHelpers(search: string){
+        return this.helperModel.aggregate([
+            {
+                $match:{
+                    $or:[
+                        {fullName: {$regex: search, $options: 'i'}},
+                        {phoneNumber: {$regex: search, $options: 'i'}},
+                        {$expr:{
+                            $regexMatch : {
+                                input : {$toString: '$employeeCode'},
+                                regex: search
+                            }
+                        }}
+                    ]
+                }
             }
-        }})
+        ])
     }
 
     async getHelperByFilter(filter: { service: string[], organisation: string[] }) {
-        const query: any = {};
+        const query: any = {$match: {}};
         if(filter.service && filter.service.length > 0) {
-            query.serviceType = { $in:filter.service };
+            query.$match.serviceType = { $in:filter.service };
         }
         if(filter.organisation && filter.organisation.length > 0) {
-            query.organisationName = { $in:filter.organisation };
+            query.$match.organisationName = { $in:filter.organisation };
         }
-        return await this.helperModel.find(query).exec(); 
+        return await this.helperModel.aggregate([query]); 
     }
 
 }

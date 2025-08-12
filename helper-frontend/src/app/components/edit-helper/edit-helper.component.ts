@@ -275,7 +275,7 @@ export class EditHelperComponent implements OnInit {
     if(!this.recievedHelper?._id) return
     this.helperService.editHelper(this.recievedHelper._id, formData).subscribe({
       next: (res) => {
-        this._snackbar.open("Changes saved", 'ok', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right', panelClass:['success'] });
+        const snackbar = this._snackbar.open("Changes saved", 'Close', { duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right', panelClass:['success'] });
         console.log("Form edited successfully");
         this.router.navigate(['/'])
       },
@@ -287,7 +287,12 @@ export class EditHelperComponent implements OnInit {
   }
   getPDFName(name: string){
     const splited = name.split('-').slice(1)
-    return splited.join("-")
+    const filename =  splited.join("-")
+    if(filename.length > 10){
+      return filename.substring(0,10)+"..."
+    }else{
+      return filename
+    }
   }
 
   isMarkedAsTouched(){

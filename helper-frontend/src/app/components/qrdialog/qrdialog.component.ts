@@ -40,4 +40,8 @@ export class QrdialogComponent {
       this.dialogRef.close(imagedata)
     })
   }
+
+  download(){
+    window.print()
+  }
 }

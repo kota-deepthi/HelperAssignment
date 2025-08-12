@@ -249,3 +249,26 @@ h3 {
     height: 140px;
     width: 140px;
 }
+
+.left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 300px;
+    background-color: rgba(236, 234, 234, 0.556);
+    height: 100%;
+}
+
+.bottom-buttons{
+ display: flex; 
+ justify-content: flex-end; 
+ margin-top: 5px; 
+ gap: 10px
+}
+
+.save-button {
+  background-color: black;
+  color: white;
+  font-size: medium;
+  align-self: end;
+}

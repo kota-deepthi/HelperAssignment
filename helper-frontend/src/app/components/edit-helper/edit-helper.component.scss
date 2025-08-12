@@ -81,12 +81,19 @@ header {
   height: 100%;
 }
 
-::ng-deep .error {
-  color: red
-}
+// .error {
+//   color: white !important;
+//   background-color: red !important;
+// }
 
-::ng-deep .success {
-  color: green
+// .success {
+//   color: white !important;
+//   background-color: green !important;
+// }
+
+.mat-snack-bar-container.success {
+  background-color: green;
+  color: white;
 }
 
 .profilePicPresent {
@@ -111,4 +118,21 @@ header {
 
 mat-form-field{
   width: 100%;
+}
+
+.hint {
+  color: gray;
+}
+
+.button{
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px;
+}
+
+.save-button {
+  background-color: black;
+  color: white;
+  font-size: medium;
+  align-self: end;
 }

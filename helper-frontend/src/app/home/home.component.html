@@ -120,7 +120,7 @@
       <button mat-raised-button>
         <mat-icon>file_download_outlined</mat-icon>
       </button>
-      <button mat-raised-button color="primary" [routerLink]="['/add-helper']">+Add-Helper</button>
+      <button mat-raised-button color="primary" [routerLink]="['/helper/add-helper']">+Add-Helper</button>
     </div>
   </nav>
 
@@ -198,7 +198,7 @@
           <div class="display-content"><p>Email:</p> {{ selectedHelper.email || '-'}}</div>
         </div>
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl" style="display: flex; align-items: center;">
+          <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl" style="display: flex; align-items: center; text-decoration: none;">
           <mat-icon>visibility</mat-icon>  View
           </a>
         </div>

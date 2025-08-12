@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { NavigationExtras, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AddHelperComponent } from '../components/add-helper/add-helper.component';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
@@ -17,30 +17,9 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatOption, MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { SuccesssdialogComponent } from '../components/successsdialog/successsdialog.component';
-import { QrdialogComponent } from '../components/qrdialog/qrdialog.component';
-import { DocdialogComponent } from '../components/docdialog/docdialog.component';
-
-interface Helper {
-    _id: string,
-    employeeCode: number, 
-    employeeIDurl: string, 
-    profilePicUrl : string,
-    serviceType: string
-    organisationName: string
-    fullName: string
-    language: Array<string>
-    gender: string
-    countryCode: string
-    phoneNumber: string
-    phone: string
-    email : string
-    vehicleType : string
-    docType: string
-    kycDocUrl: string
-    additionalDoc : string
-    DOJ : Date
-}
+import Helper from '../models/helper.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { duration } from 'html2canvas/dist/types/css/property-descriptors/duration';
 
 @Component({
   selector: 'app-home',
@@ -53,18 +32,19 @@ interface Helper {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-
   typeofserviceoptions= ['cook', 'nurse', 'driver', 'maid']
   organisationoptions=['ASBL', 'Spring helpers']
 
   constructor(private router: Router,
     private helperService: HelperService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private _snackbar: MatSnackBar
   ){}
 
   get isAddHelperRoute(): boolean{
-    return this.router.url.includes('/add-helper')
+    return this.router.url.includes('/helper/add-helper')
   }
+
 
   Helpers: Helper[] = []
   searchField = new FormControl('')
@@ -201,10 +181,12 @@ export class HomeComponent implements OnInit {
         if (!this.selectedHelper || !this.selectedHelper._id) return;
         this.helperService.deleteHelper(this.selectedHelper._id).subscribe({
           next:()=>{
+            this._snackbar.open("Helper Deleted Successfully!", "Close", {duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right'})
             this.fetchHelpers()
             this.selectedHelper = null;
           },
           error:(err)=>{
+            this._snackbar.open("Helper Deletion Failed!", "Close", {duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'right'})
             console.error("Couldn't delete the helper",err);
           }
         });
@@ -222,7 +204,7 @@ export class HomeComponent implements OnInit {
   }
 
   editHelper(id: string) {
-    this.router.navigate([`/edit-helper/${id}`])
+    this.router.navigate([`/helper/edit-helper/${id}`])
   }
 
   getInitial(name: string): string{

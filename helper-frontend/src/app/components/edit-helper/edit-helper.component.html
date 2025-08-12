@@ -14,6 +14,8 @@
 
   <div class="right">
     <form *ngIf="selectedIndex === 1" [formGroup]="firstFormGroup">
+      <h1 style="margin-bottom: 0px">Helper Details</h1>
+      <p style="margin-top: 4px; width: 100%;" class="hint">Track, Add and Manage all helpers at one place</p>
       <div *ngIf="!firstFormGroup.get('profilepic')?.value">
         <img src="assets/UploadImage.png" (click)="fileInput.click()" class="upload-image">
         <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept="image/jpeg,image/png">
@@ -178,7 +180,9 @@
             <p *ngIf="!previewPdf && isMarkedAsTouched()" style="color: red; font-size: 12px; margin-top: 0px;">This field is Mandatory</p>
 
       </div>
-      <button (click)="submit()">Save</button>
+      <div class="button">
+        <button class="save-button" (click)="submit()">Save</button>
+      </div>
     </form>
 
     <form *ngIf="selectedIndex === 2" [formGroup]="secondFormGroup" class="secondForm">
@@ -187,8 +191,8 @@
           <a [href]="'http://localhost:3000/uploads/' + recievedHelper?.additionalDoc" target="_blank">View</a>
         </p>
       </div>
-      <div>
-        <button (click)="submit()">Save</button>
+      <div class="button">
+        <button class="save-button" (click)="submit()">Save</button>
       </div>
     </form>
   </div>

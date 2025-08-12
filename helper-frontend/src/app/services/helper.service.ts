@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-
+import Helper from '../models/helper.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +18,8 @@ export class HelperService {
     return this.http.get('http://localhost:3000/helper')
   }
 
-  getHelperByID(id: string) {
-    return this.http.get(`http://localhost:3000/helper/${id}`)
+  getHelperByID(id: string): Observable<Helper> {
+    return this.http.get<Helper>(`http://localhost:3000/helper/${id}`)
   }
 
   deleteHelper(id: string) {
@@ -41,12 +41,9 @@ export class HelperService {
   getPdf(url: string){
     return this.http.get(url, {responseType: 'blob'}).pipe(
       map((blob: Blob)=>{
-        const filename = url.split('/').pop() || 'Document.pdf'
+        const filename = url.split('/').pop() || 'download'
         return new File([blob], filename, {type: blob.type})
       })
     )
   }
-
-  
-
 }

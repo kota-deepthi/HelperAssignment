@@ -148,13 +148,7 @@ export class HelperController {
   @Get('/searchBy/:search')
   async searchHelpers(@Param('search') search: string){
     search = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const searchbyName = await this.helperService.getHelperByName(search);
-    const searchbyID = await this.helperService.getHelperByEmpID(search);
-    const searchbyPhone = await this.helperService.getHelperByPhone(search);
-    const res = [ ...searchbyID, ...searchbyName, ...searchbyPhone]
-    const unique = Array.from(new Set(res.map(item => item.employeeCode))).map(code=> res.find(item=> item.employeeCode===code));
-    console.log(unique)
-    return unique;
+    return this.helperService.searchHelpers(search)
   }
 
   @Post('filter')
