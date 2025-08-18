@@ -145,14 +145,8 @@ export class HelperController {
     return { message: 'Helper deleted successfully' };
   }
 
-  @Get('/searchBy/:search')
-  async searchHelpers(@Param('search') search: string){
-    search = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    return this.helperService.searchHelpers(search)
-  }
-
-  @Post('filter')
-  async filterHelper(@Body() filter: {service: string[], organisation: string[]}){
-    return await this.helperService.getHelperByFilter(filter)
+  @Post('searchFilter')
+  async searchFilter(@Body() filter: {service: string[], organisation: string[], search: string}){
+    return this.helperService.searchFilter(filter)
   }
 }

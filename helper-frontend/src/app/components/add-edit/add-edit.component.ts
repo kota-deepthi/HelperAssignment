@@ -348,9 +348,8 @@ Object.keys(this.secondFormGroup.controls).forEach(key => {
     if (first.email) formData.append('email', first.email);
     formData.append('docType', first.docType ?? '');
     formData.append('additionalDocType', second.additionalDocType?? '');
-
+    formData.append('vehicleType', first.vehicleType);
     if (first.vehicleType && first.vehicleType !== 'none') {
-      formData.append('vehicleType', first.vehicleType);
       if (first.vehicleNumber) formData.append('vehicleNumber', first.vehicleNumber);
     }else{
       if(first.vehicleNumber) formData.append('vehicleNumber', "");

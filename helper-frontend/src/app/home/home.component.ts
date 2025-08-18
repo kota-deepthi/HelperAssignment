@@ -1,8 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { NavigationExtras, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AddHelperComponent } from '../components/add-helper/add-helper.component';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { HeaderComponent } from '../components/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { HelperService } from '../services/helper.service';
@@ -19,12 +17,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
 import Helper from '../models/helper.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { duration } from 'html2canvas/dist/types/css/property-descriptors/duration';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, AddHelperComponent, RouterOutlet, HeaderComponent, MatIconModule, MatButtonModule, NgIf, NgFor, MatDivider,
+  imports: [RouterLink, RouterOutlet, MatIconModule, MatButtonModule, NgIf, NgFor, MatDivider,
     DeleteDialogComponent, MatMenuModule, ReactiveFormsModule, MatFormField, MatSelectModule, MatOption, MatFormFieldModule, MatInputModule, MatOptionModule,
     MatCheckbox, CommonModule
   ],
@@ -46,10 +43,9 @@ export class HomeComponent implements OnInit {
     return this.router.url.includes('/helper/add-helper')
   }
 
-
   Helpers: Helper[] = []
   searchField = new FormControl('')
-  filteredHelpers: any
+  filteredHelpers: Helper[] = []
   serviceFilter = new FormControl<string[]>([])
   organisationFilter = new FormControl<string[]>([])
   serviceSearch = new FormControl('')
@@ -59,7 +55,7 @@ export class HomeComponent implements OnInit {
     
   ngOnInit(): void {
     this.fetchHelpers()
-    this.setUpSearch()   
+    this.searchField.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(()=> this.applyFilterAndSearch());
     this.filteredServiceOptions = [...this.typeofserviceoptions]
     this.filteredOrgOptions = [...this.organisationoptions] 
     this.serviceSearch.valueChanges.subscribe(value=>{
@@ -92,39 +88,21 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  setUpSearch(): void {this.searchField.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe((search)=>{
-    if(search==''){
-      this.filteredHelpers = this.Helpers;
-      this.selectedHelper = this.Helpers[0]
-    }else{
-      this.searchHelpers(search);
+  applyFilterAndSearch(){
+    this.showResult = true
+    if(!this.serviceFilter && !this.organisationFilter && !this.searchField){
+      this.showResult = false
     }
-    });
-}
+    const filter = {
+      service: this.serviceFilter.value ?? [],
+      organisation: this.organisationFilter.value?? [],
+      search: this.searchField.value?? ''
+    }
 
-
-  searchHelpers(search: any) {
-      this.helperService.searchHelper(search).subscribe({
-      next: (helpers) => {
-        console.log(helpers)
+    this.helperService.searchFilter(filter).subscribe({
+      next: (helpers)=>{
         this.filteredHelpers = helpers
         this.selectedHelper = this.filteredHelpers[0]
-      },
-      error: (err) => {
-        console.log('Search error:', err);
-      },
-    });
-  }
-
-  applyFilters(){
-    this.showResult = true
-    this.helperService.filterHelper({service: this.serviceFilter.value??[], organisation: this.organisationFilter.value??[]}).subscribe({
-      next: (helpers)=> {
-        this.filteredHelpers = helpers;
-        this.selectedHelper = this.filteredHelpers[0]
-      },
-      error: (err)=>{
-        console.log("something went worng while filtering", err)
       }
     })
   }
@@ -199,9 +177,9 @@ export class HomeComponent implements OnInit {
 
   sortHelper(sortby: string){
     if(sortby==='code'){
-      this.Helpers.sort((a,b)=>a.employeeCode - b.employeeCode)
+      this.filteredHelpers.sort((a,b)=>a.employeeCode - b.employeeCode)
     }else if(sortby==='name'){
-      this.Helpers.sort((a,b)=> a.fullName.localeCompare(b.fullName))
+      this.filteredHelpers.sort((a,b)=> a.fullName.localeCompare(b.fullName))
     }
   }
 

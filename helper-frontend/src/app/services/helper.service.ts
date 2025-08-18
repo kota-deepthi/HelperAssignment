@@ -30,12 +30,8 @@ export class HelperService {
     return this.http.patch(`http://localhost:3000/helper/${id}`, data)
   }
 
-  searchHelper(search: string){
-    return this.http.get(`http://localhost:3000/helper/searchBy/${encodeURIComponent(search)}`)
-  }
-
-  filterHelper(filter: {service: string[], organisation: string[]}){
-    return this.http.post(`http://localhost:3000/helper/filter`, filter)
+  searchFilter(filter: {service: string[], organisation: string[], search: string}): Observable<Helper[]>{
+    return this.http.post<Helper[]>("http://localhost:3000/helper/searchFilter", filter)
   }
 
   getPdf(url: string){

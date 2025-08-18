@@ -1,5 +1,8 @@
 <div *ngIf="!isAddHelperRoute">
-  <app-header></app-header>
+  <div class="header">
+    <h1>Helpers</h1>
+    <mat-icon>more_vert</mat-icon>
+  </div>
   <nav class="navbar">
     <div class="nav-left">
       <div>
@@ -39,7 +42,7 @@
                 >
                 select All
                 <mat-divider></mat-divider>
-                {{serviceFilter?.value?.length}} / {{typeofserviceoptions.length}}
+                {{serviceFilter.value?.length}} / {{typeofserviceoptions.length}}
                 </mat-checkbox>
 
                 <mat-option *ngFor="let service of filteredServiceOptions" [value]="service">
@@ -75,7 +78,7 @@
                 >
                 select All
                 <mat-divider></mat-divider>
-                {{organisationFilter?.value?.length}} / {{organisationoptions.length}}
+                {{organisationFilter.value?.length}} / {{organisationoptions.length}}
                 </mat-checkbox>
 
                 <mat-option *ngFor="let org of filteredOrgOptions" [value]="org">
@@ -96,7 +99,7 @@
           <mat-divider></mat-divider>
           <div class="filter-buttons">
             <p style="display: flex;" (click)="resetFilters()" (click)="$event.stopPropagation()"><mat-icon>replay_outlined</mat-icon> Reset</p>
-            <button mat-raised-button color="primary" (click)="applyFilters()">Apply</button>
+            <button mat-raised-button color="primary" (click)="applyFilterAndSearch()">Apply</button>
           </div>
         </div>  
         </mat-menu>
@@ -198,7 +201,7 @@
           <div class="display-content"><p>Email:</p> {{ selectedHelper.email || '-'}}</div>
         </div>
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl" style="display: flex; align-items: center; text-decoration: none;">
+          <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + selectedHelper.kycDocUrl" target="_blank" style="display: flex; align-items: center; text-decoration: none;">
           <mat-icon>visibility</mat-icon>  View
           </a>
         </div>
@@ -217,86 +220,6 @@
           <div class="display-content"><p>Date:</p> {{ formatDateTime(selectedHelper.DOJ) }}</div>
         </div>
       </div>
-
-      <!-- <div class="profile-section" *ngIf="!selectedHelper && filteredHelpers?.length||0>0">
-        <div class="helper-profile">
-          <div class="image-name-type">
-            <div *ngIf="Helpers[0]?.profilePicUrl">
-              <img
-                class="profile-pic"
-                [src]="'http://localhost:3000/uploads/' + Helpers[0].profilePicUrl"
-                alt="Profile"
-              />
-            </div>
-            <div *ngIf="Helpers[0]?.profilePicUrl===null || Helpers[0]?.profilePicUrl===undefined" class="non-profile-pic">
-              {{getInitial(Helpers[0].fullName)}}
-            </div>
-            <div class="content-helper-name">
-              <h2 style="margin: 0px;">{{Helpers[0].fullName }}</h2>
-              {{ Helpers[0].serviceType }}
-            </div>
-          </div>
-          <div class="edit-delete-buttons">
-              <button mat-raised-button (click)="editHelper(Helpers[0]._id)">
-                <mat-icon>edit_outlined</mat-icon>
-              </button>
-              <button mat-raised-button (click)="openDeleteDialog()">
-                <mat-icon>delete_outlined</mat-icon>
-              </button>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center;">
-          <span style="color: rgb(154,156,163); font-weight: 500;">
-            Employee ID
-          </span>
-          <span style="flex-grow: 1; margin-left: 10px;">
-            <mat-divider></mat-divider>
-          </span>
-        </div>
-        <div class="content-block">
-          <div class="display-content">
-            <p>Identification Card:</p> {{ Helpers[0].employeeIDurl }}
-          </div>
-          <div class="display-content">
-            <p>Employee code:</p> {{ Helpers[0].employeeCode }}
-          </div>
-        </div>
-        
-        <div style="display: flex; align-items: center;">
-          <span style="color: rgb(154,156,163); font-weight: 500;">
-            PERSONAL DETAILS
-          </span>
-          <span style="flex-grow: 1; margin-left: 10px;">
-            <mat-divider></mat-divider>
-          </span>
-        </div>
-        <div class="content-block">
-          <div class="display-content"><p>Gender:</p> {{ Helpers[0].gender }}</div>
-          <div class="display-content"><p>Language(s):</p> {{ Helpers[0].language.join(', ') }}</div>
-          <div class="display-content"><p>Mobile No:</p>{{ Helpers[0].countryCode }} {{Helpers[0].phoneNumber}}</div>
-          <div class="display-content"><p>Email:</p> {{ Helpers[0].email || '-'}}</div>
-          <div style="display: flex; flex-direction: row; align-items: center;">
-            <p>KYC Document:</p> <a [href]="'http://localhost:3000/uploads/' + Helpers[0].kycDocUrl" style="display: flex; align-items: center;">
-              <mat-icon>remove_red_eye_outlined</mat-icon>  View
-            </a>
-          </div>
-        </div>
-        
-        <div style="display: flex; align-items: center;">
-          <span style="color: rgb(154,156,163); font-weight: 500;">
-           SERVICE DETAILS
-          </span>
-          <span style="flex-grow: 1; margin-left: 10px;">
-            <mat-divider></mat-divider>
-          </span>
-        </div>
-        <div class="content-block">
-          <div class="display-content"><p>Type:</p> {{ Helpers[0].serviceType }}</div>
-          <div class="display-content"><p>Organisation:</p> {{ Helpers[0].organisationName }}</div>
-          <div class="display-content"><p>Date:</p> {{ formatDateTime(Helpers[0].DOJ) }}</div>
-        </div>
-        
-      </div> -->
       <div *ngIf="!selectedHelper && filteredHelpers?.length===0">
         No Helpers found
       </div>
