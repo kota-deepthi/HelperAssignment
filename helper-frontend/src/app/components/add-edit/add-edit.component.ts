@@ -56,7 +56,7 @@ export class HelperFormComponent implements OnInit {
   additionalurl: string | null = null;
 
 
-  typeofserviceoptions = ['cook', 'nurse', 'driver', 'maid'];
+  typeofserviceoptions = ['cook', 'nurse', 'driver', 'maid', 'electrician', 'plumber', 'gardener','painter', 'carpender'];
   organisationoptions = ['ASBL', 'Spring helpers'];
   languagesoptions: string[] = ["English", "Telugu", "Hindi", "Kannnada", "Tamil", "Marati"];
   vehicleTypes = ['none', "auto", "bike", "car"];

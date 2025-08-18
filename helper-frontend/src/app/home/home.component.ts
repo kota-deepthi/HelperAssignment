@@ -34,6 +34,7 @@ import { duration } from 'html2canvas/dist/types/css/property-descriptors/durati
 export class HomeComponent implements OnInit {
   typeofserviceoptions= ['cook', 'nurse', 'driver', 'maid']
   organisationoptions=['ASBL', 'Spring helpers']
+  showResult = false
 
   constructor(private router: Router,
     private helperService: HelperService,
@@ -106,7 +107,7 @@ export class HomeComponent implements OnInit {
       this.helperService.searchHelper(search).subscribe({
       next: (helpers) => {
         console.log(helpers)
-        this.filteredHelpers = helpers;
+        this.filteredHelpers = helpers
         this.selectedHelper = this.filteredHelpers[0]
       },
       error: (err) => {
@@ -116,6 +117,7 @@ export class HomeComponent implements OnInit {
   }
 
   applyFilters(){
+    this.showResult = true
     this.helperService.filterHelper({service: this.serviceFilter.value??[], organisation: this.organisationFilter.value??[]}).subscribe({
       next: (helpers)=> {
         this.filteredHelpers = helpers;
@@ -213,8 +215,20 @@ export class HomeComponent implements OnInit {
   }
 
   resetFilters(){
+    this.showResult = false
     this.serviceFilter.setValue([])
     this.organisationFilter.setValue([])
+  }
+
+  resetOne(filter: string){
+    if(filter==='service'){
+      this.serviceFilter.setValue([])
+    }else{
+      this.organisationFilter.setValue([])
+    }
+    if(!this.serviceFilter && !this.organisationFilter){
+      this.showResult = false
+    }
   }
 
 }

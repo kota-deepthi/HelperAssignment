@@ -24,7 +24,7 @@
             <div mat-menu-item (click)="$event.stopPropagation()">
             <div style="display: flex; justify-content: space-between;">
               <label>Service</label>
-              <span style="color: rgb(111,115,189)" *ngIf="serviceFilter.value?.length || 0 > 0" (click)="serviceFilter.setValue([])">reset</span>
+              <span style="color: rgb(111,115,189)" *ngIf="serviceFilter.value?.length || 0 > 0" (click)="resetOne('service')">reset</span>
             </div>
             <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
               <mat-select [formControl]="serviceFilter" placeholder="Select Service" multiple (selectionChange)="onSelectionChange($event, 'service')">
@@ -60,7 +60,7 @@
           <div mat-menu-item (click)="$event.stopPropagation()">
             <div style="display: flex; justify-content: space-between;">
             <label>Organisation</label>
-              <span style="color: rgb(111,115,189)" *ngIf="organisationFilter.value?.length || 0 > 0" (click)="organisationFilter.setValue([])">Reset</span>
+              <span style="color: rgb(111,115,189)" *ngIf="organisationFilter.value?.length || 0 > 0" (click)="resetOne('org')">Reset</span>
             </div>
             <mat-form-field appearance="outline" (click)="$event.stopPropagation()">
               <mat-select [formControl]="organisationFilter" placeholder="Select Organisation" multiple (selectionChange)="onSelectionChange($event, 'org')">
@@ -109,10 +109,10 @@
       <div>
         <input type="text" matInput [formControl]="searchField" placeholder="🔎 Name, Employee ID, Phone" class="search-input" >
       </div>
-       <div *ngIf="searchField.value==='' && (serviceFilter.value?.length || 0)===0 && (organisationFilter?.value?.length || 0)===0 && filteredHelpers?.length || 0 === Helpers?.length || 0">
+       <div *ngIf="searchField.value==='' && !showResult">
         {{Helpers.length || 0}} Helpers
        </div>
-       <div *ngIf="searchField.value!=='' || (serviceFilter.value?.length || 0)>0 || (organisationFilter?.value?.length || 0)>0">
+       <div *ngIf="searchField.value!=='' || showResult">
         {{filteredHelpers.length || 0}} of {{Helpers.length || 0}} results
        </div>
     </div>
