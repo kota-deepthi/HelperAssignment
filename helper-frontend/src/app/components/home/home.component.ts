@@ -3,9 +3,9 @@ import { NavigationExtras, Router, RouterLink, RouterOutlet } from '@angular/rou
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { HelperService } from '../services/helper.service';
+import { HelperService } from '../../services/helper.service';
 import { MatDivider } from '@angular/material/divider';
-import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
+import { DeleteDialogComponent } from '../../shared/delete-dialog/delete-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu'
 import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatOption, MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckbox } from '@angular/material/checkbox';
-import Helper from '../models/helper.model';
+import Helper from '../../models/helper.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
