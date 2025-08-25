@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { HelperService } from '../services/helper.service';
 import { MatDivider } from '@angular/material/divider';
-import { DeleteDialogComponent } from '../components/delete-dialog/delete-dialog.component';
+import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {MatMenuModule} from '@angular/material/menu'
 import { Form, FormControl, ReactiveFormsModule } from '@angular/forms';

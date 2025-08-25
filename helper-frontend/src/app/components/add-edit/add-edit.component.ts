@@ -18,7 +18,7 @@ import { FormsModule } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { CountryCodeService } from '../../services/country-code.service';
 import { HelperService } from '../../services/helper.service';
-import { DocdialogComponent } from '../docdialog/docdialog.component';
+import { DocdialogComponent } from '../../shared/docdialog/docdialog.component';
 import { SuccesssdialogComponent } from '../successsdialog/successsdialog.component';
 import { QrdialogComponent } from '../qrdialog/qrdialog.component';
 import Helper from '../../models/helper.model';

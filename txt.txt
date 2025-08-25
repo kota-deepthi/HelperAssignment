@@ -1,0 +1,362 @@
+html
+<div class="payout-admin-mode-wrapper">
+    <div class="payout-admin-mode-header">Payout Management</div>
+
+    <div class="payout-admin-mode-content">
+        <div class="projects">
+            <p class="projects-header secondry-font">PROJECT</p>
+            <div class="projects-content">
+                @for(project of projectList(); track project){
+                    <div
+                        class="project"
+                        [ngClass] = "{'active-project': selectedProject().id == project.id}"
+                        (click) = "onSelectProject(project)"
+                    >
+                        {{project.name}}
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="admin-content">
+            <div class="breadcrums">
+                <app-breadcrumb [items]="navigationItems" />
+            </div>
+            <div class="total-value-cards">
+            <div class="total-value-card">
+                <div class="total-value-card-left">
+                    <div class="total-value-card-left-title">Current Balance</div>
+                    <div class="total-value-card-left-value">
+                        ₹60,00,00,000
+                    </div>
+                </div>
+                <div class="total-value-card-right credit-card-icon">
+                    <i class="ph-fill ph-credit-card"></i>
+                </div>
+            </div>
+
+            <div class="total-value-card">
+                <div class="total-value-card-left">
+                    <div class="total-value-card-left-title">Payable to Department</div>
+                    <div class="total-value-card-left-value">
+                        ₹60,00,00,000
+                    </div>
+                </div>
+                <div class="total-value-card-right credit-card-icon">
+                    <i class="ph-fill ph-credit-card"></i>
+                </div>
+            </div>
+
+            <div class="total-value-card">
+                <div class="total-value-card-left">
+                    <div class="total-value-card-left-title">Total Pending Payments</div>
+                    <div class="total-value-card-left-value">
+                        ₹60,00,00,000
+                    </div>
+                </div>
+                <div class="total-value-card-right credit-card-icon">
+                    <i class="ph-fill ph-credit-card"></i>
+                </div>
+            </div>
+        </div>
+
+            <div class="admin-content-header">
+                <app-search (onSearch)="onDepartmentSearch($event)" />
+                <app-button
+                    [props]="{ label: 'Transfer', leadingIcon: 'ph ph-plus'}"
+                >
+                </app-button>
+            </div>
+
+            <div class="section-table">
+                <p-table [scrollable]="true" scrollHeight="calc(100vh - 225px)" [value]="departmentList()">
+                    <ng-template #header>
+                        <tr>
+                            <th>Department</th>
+                            <th>Current Balance</th>
+                            <th>Payable to Department</th>
+                            <th>Pending Payments</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-department>
+                        <tr>
+                            <td>{{department.name}}</td>
+                            <td>₹60,00,00,000</td>
+                            <td>₹60,00,00,000</td>
+                            <td>₹60,00,00,000</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>
+scss
+.payout-admin-mode {
+    &-wrapper {
+        min-height: 100vh;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &-header {
+        font-weight: 700;
+        font-size: 24px;
+        border-bottom: 1px solid var(--darkWhiteColor);
+        height: 80px;
+        padding: 25px 20px;
+    }
+
+    &-content {
+        display: flex;
+
+        & .projects {
+            border-right: 1px solid var(--darkWhiteColor);
+            width: 20%;
+            padding: 24px 16px;
+            color: #64748b;
+            overflow: auto;
+            max-height: calc(100vh - 80px);
+
+            & .projects-header {
+                font: 700 12px Nunito;
+                line-height: 160%;
+                margin-bottom: 16px;
+                padding: 1px 10px;
+            }
+
+            & .projects-content {
+                font: 500 14px Inter;
+                display: flex;
+                flex-direction: column;
+                align-items: start;
+
+                & > .project {
+                    height: 48px;
+                    padding: 13px 16px;
+                    width: 100%;
+                    border: 1px solid var(--whiteColor);
+
+                    &:hover {
+                        border: 1px solid var(--gray100);
+                        border-radius: 4px;
+                        background-color: #f8fafc;
+                        cursor: pointer;
+                    }
+                }
+
+                .active-project {
+                    color: #2563eb;
+                    font-weight: 700;
+                    border: 1px solid var(--gray100);
+                    border-radius: 4px;
+                    background-color: #f8fafc;
+                }
+            }
+        }
+
+        .admin-content {
+            width: calc(100% - 15%);
+            padding: 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px 0;
+
+            .breadcrums {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-start;
+                align-items: center;
+                color: var(--gray500);
+                line-height: 20px;
+
+                & > .selectedProject {
+                    font-weight: 700;
+                    color: #0f172a;
+                }
+            }
+
+            .admin-content-header{
+                display: flex;
+                justify-content: space-between;
+            }
+
+            & .total-value-cards {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+
+                & .total-value-card {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 10px;
+                    border-radius: 12px;
+                    border: 1px solid var(--gray100);
+                    background-color: var(--whiteColor);
+
+                    &-left {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+
+                        &-title {
+                            font-size: 11px;
+                            font-weight: 400;
+                            color: #535862;
+                        }
+
+                        &-value {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: var(--textBlack);
+                        }
+                    }
+
+                    &-right {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+
+                        &.wallet-icon {
+                            background-color: #fcf3e0;
+                            color: #f2b600;
+                        }
+
+                        &.credit-card-icon {
+                            background-color: #d9f2ef;
+                            color: #00a991;
+                        }
+
+                        &.trend-up-down-icon {
+                            background-color: #fcedec;
+                            color: #dc4a41;
+                        }
+                    }
+                }
+            }
+            & .total-value-cards > *:first-child {
+                grid-column: 1/-1;
+            }
+
+        }
+    }
+}
+
+component
+import { Component, OnInit, signal } from '@angular/core';
+import { PayoutAdminModeService } from '../../services/payout-admin-mode.service'
+import { NgClass } from '@angular/common'
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb.component'
+import { SearchComponent } from '../../../../shared/components/search/search.component'
+import { ButtonComponent } from '../../../../shared/components/button/button.component'
+import { get } from 'lodash'
+import { TableModule } from 'primeng/table'
+
+interface Project {
+  id: string
+  name: string
+}
+
+interface Department {
+  id: string
+  name: string
+}
+
+@Component({
+  selector: 'app-payout-admin-mode',
+  imports: [NgClass, BreadcrumbComponent, SearchComponent, ButtonComponent, TableModule],
+  templateUrl: './payout-admin-mode.component.html',
+  styleUrl: './payout-admin-mode.component.scss'
+})
+export class PayoutAdminModeComponent implements OnInit {
+
+  projectList = signal<Project[]>([])
+  selectedProject = signal<Project>({
+    id: '',
+    name: '',
+  })
+  searchData = signal<string>('')
+  departmentList = signal<Department[]>([])
+
+  get navigationItems(): BreadcrumbItem[] {
+    return [
+      {identifier: 'payout-management', label: 'Payout Management'},
+      {identifier: 'admin-mode', label: 'Admin Mode'},
+      {identifier: this.selectedProject().id, label: this.selectedProject().name}
+    ]
+  }
+
+  constructor(
+    private payoutAdminModeService: PayoutAdminModeService
+  ){ }
+
+  ngOnInit(): void {
+    this.fetchProject()
+  }
+
+  fetchProject(){
+    this.payoutAdminModeService.getProjectList().subscribe({
+      next: (res) =>{
+        if(res.success){
+          const list = res.data.map((item: any)=>{
+            return {
+              id: item._id,
+              name: item.name,
+            }
+          })
+          this.projectList.set(list)
+          this.selectedProject.set(list[0])
+          this.fetchDepartments()
+        }
+      }
+    })
+  }
+
+  onSelectProject(project: Project){
+    this.selectedProject.set(project)
+    this.fetchDepartments()
+  }
+
+  fetchDepartments(){
+    const params: any = { projectId: this.selectedProject().id }
+    this.payoutAdminModeService.fetchDepartmentList(this.selectedProject().id, params).subscribe(value =>{
+      const list = value.data.items.map((item: any)=>{
+        return {
+          id: item._id,
+          name: item.name
+        }
+      })
+      this.departmentList.set(list)
+    })
+  }
+
+  onDepartmentSearch(searchTerm: string){
+    this.searchData.set(searchTerm)
+  }
+
+}
+serviceimport { Injectable } from '@angular/core';
+import { ApiService } from '../../../core/services/api.service'
+import { ApiRequestParams, ResponseJson } from '../../../core/models/core.interface'
+import { Observable } from 'rxjs'
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PayoutAdminModeService {
+
+  constructor(
+    private apiService: ApiService
+  ) { }
+
+  getProjectList(): Observable<ResponseJson<any>> {
+    return this.apiService.get('/user/projects')
+  }
+
+  fetchDepartmentList(id: string, params: any): Observable<ResponseJson<any>> {
+    return this.apiService.get(`/outflow-logging/planned/${id}`, params)
+  }
+}
